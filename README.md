@@ -1,7 +1,7 @@
 ### 一、简介
 标绘扩展符号库是一套基于SuperMap iClient 7C for Flash 的基础库扩展的符号库，提供了常用复杂的几何对象，可以大大降低用户开发的难度和时间成本。
 
-![image](http://fmn.rrimg.com/fmn063/20140313/1540/large_Yump_5c6e000000821191.jpg)
+![image](http://fmn.rrimg.com/fmn063/20140507/1645/large_XvZH_70a100005ce41191.jpg)
 
 
 ### 二、支持的符号
