@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:ic="http://www.supermap.com/iclient/2010"
+			   width="100%" height="100%"
+			   creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[	
+			import com.supermap.web.actions.DrawAction;
+			import web.actions.DrawCircleEx;
+			import web.actions.DrawCurveFlag;
+			import web.actions.DrawDiagonalArrow;
+			import web.actions.DrawDoubleArrow;
+			import web.actions.DrawRectFlag;
+			import web.actions.DrawStraightArrow;
+			import web.actions.DrawTriangleFlag;
+			import com.supermap.web.actions.Pan;
+			import web.actions.PlottingEdit;
+			import com.supermap.web.core.Feature;
+			import com.supermap.web.core.Point2D;
+			import com.supermap.web.core.geometry.GeoLine;
+			import com.supermap.web.core.styles.PredefinedFillStyle;
+			import com.supermap.web.events.DrawEvent;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			
+			private var drawCircleEx:DrawCircleEx;
+			
+			private var drawRectFlag:DrawRectFlag;
+			private var drawTriangleFlag:DrawTriangleFlag;
+			private var drawCurveFlag:DrawCurveFlag;
+			
+			private var drawStraightArrow:DrawStraightArrow;
+			private var drawDiagonalArrow:DrawDiagonalArrow;
+			private var drawDoubleArrow:DrawDoubleArrow;
+			
+			private var geoStyleS:String = "solid";
+			
+			private var edit:PlottingEdit;
+			//初始化所有标绘扩展符号绘制对象
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//绘制圆
+				drawCircleEx = new DrawCircleEx(map);
+				drawCircleEx.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制直角旗标
+				drawRectFlag = new DrawRectFlag(map);
+				drawRectFlag.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制三角旗标
+				drawTriangleFlag = new DrawTriangleFlag(map);
+				drawTriangleFlag.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制曲线旗标
+				drawCurveFlag = new DrawCurveFlag(map);
+				drawCurveFlag.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制直箭头
+				drawStraightArrow = new DrawStraightArrow(map);
+				drawStraightArrow.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制斜箭头
+				drawDiagonalArrow = new DrawDiagonalArrow(map);
+				drawDiagonalArrow.addEventListener(DrawEvent.DRAW_END,addFeature);
+				//绘制双箭头
+				drawDoubleArrow = new DrawDoubleArrow(map);
+				drawDoubleArrow.addEventListener(DrawEvent.DRAW_END,addFeature);
+				
+				
+				edit = new PlottingEdit(map,fl);
+			}
+			
+			//矢量要素绘制完毕事件 DrawEvent.DRAW_END 的侦听函数
+			private function addFeature(event:DrawEvent):void
+			{
+				fl.addFeature(event.feature);
+			}
+			protected function textLabel_clickHandler2(event:MouseEvent):void
+			{
+				var urlReq:URLRequest = new URLRequest("https://github.com/SuperMap/DynamicPlotting");				
+				navigateToURL(urlReq, "_blank");
+			}
+			//超链接
+			protected function textLabel_clickHandler(event:MouseEvent):void
+			{
+				var urlReq:URLRequest = new URLRequest("http://www.supermap.com.cn/");				
+				navigateToURL(urlReq, "_blank");
+			}
+			//标绘扩展符号绘制
+			protected function B_drawState_clickHandler(event:MouseEvent):void
+			{
+				var button:Button = event.target as Button;
+				var id:String = button.id;
+				var polygonStyle:PredefinedFillStyle = new PredefinedFillStyle(this.geoStyleS,4354775,1);
+				if(id == "B_drawCircleEx")
+				{
+					drawCircleEx.style = polygonStyle;
+					
+					map.action = drawCircleEx;
+				}
+				if(id == "B_drawRectFlag")
+				{
+					drawRectFlag.style = polygonStyle;
+					map.action = drawRectFlag;
+				}
+				if(id == "B_drawTriangleFlag")
+				{
+					drawTriangleFlag.style = polygonStyle;
+					map.action = drawTriangleFlag;
+				}
+				if(id == "B_drawCurveFlag")
+				{
+					drawCurveFlag.style = polygonStyle;
+					map.action = drawCurveFlag;
+				}
+				if(id == "B_drawStraightArrow")
+				{
+					drawStraightArrow.style = polygonStyle;
+					map.action = drawStraightArrow;
+				}
+				if(id == "B_drawDiagonalArrow")
+				{
+					drawDiagonalArrow.style = polygonStyle;
+					map.action = drawDiagonalArrow;
+				}
+				if(id == "B_drawDoubleArrow")
+				{
+					drawDoubleArrow.style = polygonStyle;
+					map.action = drawDoubleArrow;
+				}
+			}
+			
+			
+			//几何对象style修改
+			protected function geoStyle_changeHandler(event:IndexChangeEvent):void
+			{
+				var geoS:int = event.newIndex;
+				if(geoS == 0)
+				{
+					this.geoStyleS = "solid";
+				}
+				else if(geoS == 1)
+				{
+					this.geoStyleS = "null";
+				}
+				else if(geoS == 2)
+				{
+					this.geoStyleS = "horizontal";
+				}
+				else if(geoS == 3)
+				{
+					this.geoStyleS = "vertical";
+				}
+				else if(geoS == 4)
+				{
+					this.geoStyleS = "cross";
+				}
+				else if(geoS == 5)
+				{
+					this.geoStyleS = "slash";
+				}
+				else if(geoS == 6)
+				{
+					this.geoStyleS = "backslash";
+				}
+				//如果正处于绘制，则修改style
+				if(map.action is DrawAction)
+				{
+					(map.action as DrawAction).style = new PredefinedFillStyle(this.geoStyleS);
+				}
+				
+			}
+			//编辑
+			protected function B_edit_clickHandler(event:MouseEvent):void
+			{
+				map.action = edit;
+			}
+			//平移
+			protected function B_pan_clickHandler(event:MouseEvent):void
+			{
+				map.action = new Pan(map);
+			}
+			//清除
+			protected function B_clear_clickHandler(event:MouseEvent):void
+			{
+				fl.clear();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<!--添加 云 地图-->
+	<ic:Map id="map" horizontalCenter="0" bottom="0" top="0">
+		<ic:CloudLayer /> 
+		<ic:FeaturesLayer id="fl"/>
+	</ic:Map>
+	<!---->
+	<s:Label paddingRight="5" paddingBottom="5" click="textLabel_clickHandler2(event)" 
+			 text="GitHub" right="30" bottom="15" buttonMode="true"  
+			 color="blue" textDecoration="underline" />
+	<s:Label paddingRight="5" paddingBottom="5" click="textLabel_clickHandler(event)" 
+			 text="SuperMap" right="30" bottom="0" buttonMode="true"  
+			 color="blue" textDecoration="underline" />
+	<!--工具箱-->
+	<s:controlBarLayout>
+		<s:BasicLayout/>
+	</s:controlBarLayout>
+	<s:controlBarContent>
+		<s:HGroup gap="5" paddingRight="5" paddingTop="5" paddingBottom="5" right="0">
+			<s:Button id="B_drawCircleEx" label="圆" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawRectFlag" label="直角旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawTriangleFlag" label="三角旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawCurveFlag" label="曲线旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawStraightArrow" label="直箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawDiagonalArrow" label="斜箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawDoubleArrow" label="双箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_edit" label="标绘扩展符号编辑" click="B_edit_clickHandler(event)"/>
+			<s:Button id="B_pan" label="平移" click="B_pan_clickHandler(event)"/>
+			<s:Button id="B_clear" label="清除" click="B_clear_clickHandler(event)"/>
+			
+			
+			<s:Label text="风格：" fontSize="15" height="22" verticalAlign="middle"/>
+			<s:DropDownList id="geoStyle" selectedIndex="0" change="geoStyle_changeHandler(event)">
+				
+				<s:ArrayList>
+					<fx:String >实填充</fx:String>
+					<fx:String >无填充</fx:String>
+					<fx:String >水平线填充</fx:String>
+					<fx:String >垂直线填充</fx:String>
+					<fx:String >交叉线填充</fx:String>
+					<fx:String >左斜线填充</fx:String>
+					<fx:String >右斜线填充</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+		</s:HGroup>
+	</s:controlBarContent>
+	
+</s:Application>

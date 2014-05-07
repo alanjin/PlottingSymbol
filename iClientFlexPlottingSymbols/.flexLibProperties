@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="web.actions.DrawCircleEx"/>
+    <classEntry path="web.actions.DrawTriangleFlag"/>
+    <classEntry path="web.geometry.GeoTriangleFlag"/>
+    <classEntry path="web.actions.DrawCurveFlag"/>
+    <classEntry path="web.actions.DrawStraightArrow"/>
+    <classEntry path="web.geometry.GeoStraightArrow"/>
+    <classEntry path="web.actions.PlottingEdit"/>
+    <classEntry path="web.geometry.GeoPlotting"/>
+    <classEntry path="web.actions.DrawDoubleArrow"/>
+    <classEntry path="web.geometry.GeoDoubleArrow"/>
+    <classEntry path="web.geometry.GeoCurveFlag"/>
+    <classEntry path="web.geometry.GeoRectFlag"/>
+    <classEntry path="web.actions.DrawRectFlag"/>
+    <classEntry path="web.geometry.GeoCircle"/>
+    <classEntry path="web.geometry.GeoDiagonalArrow"/>
+    <classEntry path="web.actions.DrawDiagonalArrow"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
