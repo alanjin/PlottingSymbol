@@ -32,5 +32,5 @@
 
 ### 五、在线范例
 
-http://iclient.duapp.com/ps/bin-release/index.html
+http://iclient.duapp.com/ps/demo/index.html
 
