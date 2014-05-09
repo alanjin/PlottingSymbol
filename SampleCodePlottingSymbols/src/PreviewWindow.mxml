@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   close="titleWinClose(event)">
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<!--	<s:Scroller>
+	<s:VGroup id="vgp">
+	<mx:Image id="preImage" width="500" height="500"/>
+	
+	</s:VGroup>
+	</s:Scroller>-->
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Image;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			private static var _gridInstance:PreviewWindow;
+			
+			public static function getInstance():PreviewWindow
+			{ 
+				if(_gridInstance == null)
+					_gridInstance = new PreviewWindow();
+				else
+				{
+					PopUpManager.removePopUp(_gridInstance);
+					_gridInstance = new PreviewWindow();
+				}
+				return _gridInstance;
+			} 
+			
+			private function titleWinClose(event:CloseEvent):void 
+			{ 
+				PopUpManager.removePopUp(this);
+			} 
+			
+			public  function setPreImage(value:Image):void 
+			{ 
+				vgp.addElement(value);
+			} 
+		]]>
+	</fx:Script>
+	<s:Scroller width="100%" height="100%">
+		<s:Group id="vgp">
+			<!--<s:Button label="Btn"/>-->
+			<!--<mx:Image id="preImage" width="500" height="500"/>-->
+			
+		</s:Group>
+	</s:Scroller>
+</s:TitleWindow>

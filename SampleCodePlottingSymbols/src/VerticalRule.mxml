@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:layout>
+		<s:HorizontalLayout gap="0" verticalAlign="middle"/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Line height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="{getStyle('contentBackgroundColor')}" weight="1"/>
+		</s:stroke>
+	</s:Line>
+	<s:Line height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="{getStyle('color')}" weight="1" alpha="0.5"/>
+		</s:stroke>
+	</s:Line>
+</s:Group>

@@ -5,9 +5,26 @@
 			   xmlns:ic="http://www.supermap.com/iclient/2010"
 			   width="100%" height="100%"
 			   creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<s:Resize id="expand" target="{_titleWindow}" widthTo="900"/>
+		<s:Button id="btn" cornerRadius="10" width="40" height="40" label="hi"/>
+	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[	
 			import com.supermap.web.actions.DrawAction;
+			import com.supermap.web.actions.Pan;
+			import com.supermap.web.core.Feature;
+			import com.supermap.web.core.Point2D;
+			import com.supermap.web.core.Rectangle2D;
+			import com.supermap.web.core.geometry.GeoLine;
+			import com.supermap.web.core.styles.PredefinedFillStyle;
+			import com.supermap.web.events.DrawEvent;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.events.IndexChangeEvent;
+			
 			import web.actions.DrawCircleEx;
 			import web.actions.DrawCurveFlag;
 			import web.actions.DrawDiagonalArrow;
@@ -15,17 +32,7 @@
 			import web.actions.DrawRectFlag;
 			import web.actions.DrawStraightArrow;
 			import web.actions.DrawTriangleFlag;
-			import com.supermap.web.actions.Pan;
 			import web.actions.PlottingEdit;
-			import com.supermap.web.core.Feature;
-			import com.supermap.web.core.Point2D;
-			import com.supermap.web.core.geometry.GeoLine;
-			import com.supermap.web.core.styles.PredefinedFillStyle;
-			import com.supermap.web.events.DrawEvent;
-			
-			import mx.events.FlexEvent;
-			
-			import spark.events.IndexChangeEvent;
 			
 			
 			private var drawCircleEx:DrawCircleEx;
@@ -41,6 +48,10 @@
 			private var geoStyleS:String = "solid";
 			
 			private var edit:PlottingEdit;
+			[Bindable]
+			private var denoScales:Array = new Array(470000000, 235000000, 117500000, 58750000, 29375000, 14687500);
+			[Bindable]
+			private var _titleWindow:PreviewWindow;
 			//初始化所有标绘扩展符号绘制对象
 			protected function application1_creationCompleteHandler(event:FlexEvent):void
 			{
@@ -77,7 +88,7 @@
 			}
 			protected function textLabel_clickHandler2(event:MouseEvent):void
 			{
-				var urlReq:URLRequest = new URLRequest("https://github.com/SuperMap/DynamicPlotting");				
+				var urlReq:URLRequest = new URLRequest("https://github.com/SuperMap/PlottingSymbol");				
 				navigateToURL(urlReq, "_blank");
 			}
 			//超链接
@@ -134,40 +145,14 @@
 			//几何对象style修改
 			protected function geoStyle_changeHandler(event:IndexChangeEvent):void
 			{
-				var geoS:int = event.newIndex;
-				if(geoS == 0)
-				{
-					this.geoStyleS = "solid";
-				}
-				else if(geoS == 1)
-				{
-					this.geoStyleS = "null";
-				}
-				else if(geoS == 2)
-				{
-					this.geoStyleS = "horizontal";
-				}
-				else if(geoS == 3)
-				{
-					this.geoStyleS = "vertical";
-				}
-				else if(geoS == 4)
-				{
-					this.geoStyleS = "cross";
-				}
-				else if(geoS == 5)
-				{
-					this.geoStyleS = "slash";
-				}
-				else if(geoS == 6)
-				{
-					this.geoStyleS = "backslash";
-				}
+				this.geoStyleS = geoStyle.selectedItem.id.toLowerCase();
+				var polygonStyle:PredefinedFillStyle = new PredefinedFillStyle(this.geoStyleS);
 				//如果正处于绘制，则修改style
 				if(map.action is DrawAction)
 				{
-					(map.action as DrawAction).style = new PredefinedFillStyle(this.geoStyleS);
+					(map.action as DrawAction).style = polygonStyle;
 				}
+				
 				
 			}
 			//编辑
@@ -186,14 +171,42 @@
 				fl.clear();
 			}
 			
+			protected function B_print_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var printWindow:PrintWindow = new PrintWindow;
+				printWindow.addEventListener("AddPreView",addPreViewHandler);
+				printWindow.map = this.map;
+				printWindow.printBonds =  new Rectangle2D(-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892);
+				printWindow.layerIds = ["worldMap"];
+				printWindow.top = 5;
+				printWindow.bottom = 5;
+				
+				_titleWindow = null;
+				_titleWindow = new PreviewWindow;
+				_titleWindow.x = 100;
+				_titleWindow.y = 100;
+				_titleWindow.maxWidth = 1000;
+				_titleWindow.width = 255;
+				_titleWindow.height = 500;
+				PopUpManager.addPopUp(_titleWindow, this, false);  
+				_titleWindow.vgp.addElement(printWindow);
+			}
+			//_titleWindow展开动画
+			private function addPreViewHandler(event:Event):void
+			{
+				expand.end();
+				expand.play();
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
 	<!--添加 云 地图-->
-	<ic:Map id="map" horizontalCenter="0" bottom="0" top="0">
-		<ic:CloudLayer /> 
+	<ic:Map id="map" horizontalCenter="0" bottom="0" top="0" scales="{this.denoScales}">
+		<ic:CloudLayer id="worldMap" /> 
 		<ic:FeaturesLayer id="fl"/>
 	</ic:Map>
 	<!---->
@@ -208,31 +221,37 @@
 		<s:BasicLayout/>
 	</s:controlBarLayout>
 	<s:controlBarContent>
-		<s:HGroup gap="5" paddingRight="5" paddingTop="5" paddingBottom="5" right="0">
-			<s:Button id="B_drawCircleEx" label="圆" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawRectFlag" label="直角旗标" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawTriangleFlag" label="三角旗标" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawCurveFlag" label="曲线旗标" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawStraightArrow" label="直箭头" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawDiagonalArrow" label="斜箭头" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_drawDoubleArrow" label="双箭头" click="B_drawState_clickHandler(event)"/>
-			<s:Button id="B_edit" label="标绘扩展符号编辑" click="B_edit_clickHandler(event)"/>
-			<s:Button id="B_pan" label="平移" click="B_pan_clickHandler(event)"/>
-			<s:Button id="B_clear" label="清除" click="B_clear_clickHandler(event)"/>
+		<s:HGroup gap="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalCenter="0" verticalCenter="0">
+			<s:Button id="B_drawCircleEx" skinClass="skins.drawCircleSkin" label="画圆" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawRectFlag" skinClass="skins.drawRectFlagSkin" label="直角旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawTriangleFlag" skinClass="skins.drawTriangleFlagSkin" label="三角旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawCurveFlag" skinClass="skins.drawCurveFlagSkin" label="曲线旗标" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawStraightArrow" skinClass="skins.drawStraightArrowSkin" label="直箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawDiagonalArrow" skinClass="skins.drawDiagonalArrowSkin" label="斜箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_drawDoubleArrow" skinClass="skins.drawDoubleArrowSkin" label="双箭头" click="B_drawState_clickHandler(event)"/>
+			<s:Button id="B_edit" skinClass="skins.editEntityBtnSkin" label="标绘扩展符号编辑" click="B_edit_clickHandler(event)"/>
+			<s:Button id="B_pan" skinClass="skins.panBtnSkin" label="平移" click="B_pan_clickHandler(event)"/>
+			<s:Button id="B_clear" skinClass="skins.clearBtnSkin" label="清除" click="B_clear_clickHandler(event)"/>
+			<s:Button id="B_print" skinClass="skins.printBtnSkin" label="打印" click="B_print_clickHandler(event)"/>
 			
 			
-			<s:Label text="风格：" fontSize="15" height="22" verticalAlign="middle"/>
-			<s:DropDownList id="geoStyle" selectedIndex="0" change="geoStyle_changeHandler(event)">
-				
-				<s:ArrayList>
-					<fx:String >实填充</fx:String>
-					<fx:String >无填充</fx:String>
-					<fx:String >水平线填充</fx:String>
-					<fx:String >垂直线填充</fx:String>
-					<fx:String >交叉线填充</fx:String>
-					<fx:String >左斜线填充</fx:String>
-					<fx:String >右斜线填充</fx:String>
-				</s:ArrayList>
+			
+			<s:DropDownList id="geoStyle" toolTip="设置面填充风格" 
+							x="69" y="8" change="geoStyle_changeHandler(event)"
+							itemRenderer="spark.skins.spark.DefaultComplexItemRenderer" 
+							skinClass="skins.CustomDropDownListSkin" selectedIndex="0"
+							textAlign="center" fontSize="20" fontWeight="normal">
+				<s:dataProvider>
+					<s:ArrayList>
+						<s:BitmapImage source="@Embed('../assets/polygonSolid.png')" id="Solid"/>
+						<s:BitmapImage source="@Embed('../assets/null.png')" id="Null"/>
+						<s:BitmapImage source="@Embed('../assets/horizontal.png')" id="horizontal"/>
+						<s:BitmapImage source="@Embed('../assets/vertical.png')" id="vertical"/>
+						<s:BitmapImage source="@Embed('../assets/cross.png')" id="cross"/>
+						<s:BitmapImage source="@Embed('../assets/slash.png')" id="slash"/>
+						<s:BitmapImage source="@Embed('../assets/backslash.png')" id="backslash"/>
+					</s:ArrayList>
+				</s:dataProvider>
 			</s:DropDownList>
 		</s:HGroup>
 	</s:controlBarContent>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		  xmlns:supermap="http://www.supermap.com/iclient/2010" 
+		   xmlns:supermap1="http://www.supermap.com/gear/2010" xmlns:local="*">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<s:Fade id="fade" target="{printFinalContent}" alphaTo="1" duration="2000"/> 
+	</fx:Declarations>
+	<s:states>
+		<!--PrintWindow默认状态，在该状态下，仅左侧参数设置面板可见，右侧预览面板不可见，且"打印"与“全局”按钮无效-->
+		<s:State name="preView"/>
+		<!--在该状态下，右侧预览面板可见，且"打印"与“全局”按钮生效-->
+		<s:State name="print"/>
+		<!--在该状态下，右侧预览面板可见，"打印"按钮无效，"原始"按钮有效-->
+		<s:State name="image"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import com.supermap.web.actions.DrawRectangle;
+			import com.supermap.web.core.Rectangle2D;
+			import com.supermap.web.iServerJava6R.components.Legend;
+			import com.supermap.web.iServerJava6R.components.LegendItemInfo;
+			import com.supermap.web.iServerJava6R.components.skins.LegendSkin;
+			import com.supermap.web.iServerJava6R.serviceEvents.LegendEvent;
+			import com.supermap.web.mapping.Map;
+			
+			import deng.fzip.FZip;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.events.StateChangeEvent;
+			import mx.graphics.ImageSnapshot;
+			import mx.graphics.codec.IImageEncoder;
+			import mx.graphics.codec.PNGEncoder;
+			import mx.printing.FlexPrintJob;
+			import mx.printing.FlexPrintJobScaleType;
+			
+			import spark.components.Group;
+			private var drawRectangle:DrawRectangle;
+			private var legendPrint:Legend;
+			private var _map:Map;
+			private var _layerIds:Array;
+			[Bindable]
+			private var restUrl:String;
+			private var _printBonds:Rectangle2D;
+			[Bindable]
+			private var printEntirePictureSrc:Bitmap;
+			[Bindable]
+			private var printEntirePictureWth:Number;
+			[Bindable]
+			private var printEntirePictureHth:Number;
+			[Bindable]
+			private var currentYear:Number;
+			[Bindable]
+			private var currentMonth:Number;
+			[Bindable]
+			private var currentDay:Number;
+			[Bindable]
+			private var printWth:Number = 0;
+			[Bindable]
+			private var printHth:Number = 0;
+			[Bindable]
+			private var initialScale:Number;
+			[Bindable]
+			private var hasLegend:Boolean;
+			
+			////////////////////////////////////////PrintWindow属性准备/////////////////////////////////////////
+			//生成图例时所需的图层 id集合，若该参数为空，则图例默认包含Map中所有与服务端交互生成的图层
+			//如：
+			public function get layerIds():Array
+			{
+				return _layerIds;
+			}
+			
+			public function set layerIds(value:Array):void
+			{
+				_layerIds = value;
+			}
+			
+			//打印范围，必设参数
+			[Bindable]
+			public function get printBonds():Rectangle2D
+			{
+				return _printBonds;
+			}
+			
+			public function set printBonds(value:Rectangle2D):void
+			{
+				_printBonds = value;
+			}
+			
+			//需要打印的地图Map，必设参数
+			[Bindable]
+			public function get map():Map
+			{
+				return _map;
+			}
+			
+			public function set map(value:Map):void
+			{
+				_map = value;
+			}
+			////////////////////////////////////////PrintWindow属性准备完成/////////////////////////////////////////
+			
+			/////////////////////////////////////打印参数准备/////////////////////////////////////////////			
+			//修改打印参数后重新预览打印内容
+			protected function previewClickHandler(event:MouseEvent):void
+			{
+				//监听PrintWindow的状态改变事件
+				this.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE,stateChangedHandler);
+				//切换PrintWindow状态
+				if(this.currentState == 'preView' || this.currentState == 'image')
+				{
+					this.currentState = 'print';
+				}
+				_printUtil.addEventListener(MapPrintContainer.PRINT_PREPARE_COMPLETE, getWH);
+				
+				var rec:Rectangle2D = null;
+				printBonds = new Rectangle2D(x1.value,y2.value,x2.value,y1.value);
+				pinttUtilCreatComplete();
+				this.dispatchEvent(new Event("AddPreView"));
+			}
+			
+			//PrintWindow状态改变事件的侦听函数
+			private function stateChangedHandler(event:StateChangeEvent):void
+			{
+				//仅当PrintWindow的状态是由preView改变为print时，触发PrintWindow右侧面板的显示动画
+				if(event.oldState == "preView" && event.newState == "print")
+				{
+					fade.end();
+					fade.play();
+					fade.target.alpha = fade.alphaTo;
+				}
+			}
+			
+			
+			
+			//获取打印内容的实际宽高
+			private function getWH(event:Event):void
+			{
+				printWth = scrollerWindow.viewport.contentWidth;
+				printHth = scrollerWindow.viewport.contentHeight;
+			}
+			
+			//生成打印数据，并初始化打印日期
+			private function pinttUtilCreatComplete():void
+			{
+				_printUtil.makeMapBitmapData(map,map.resolutions[mapScales.selectedIndex], printBonds);
+				currentYear = printDate.selectedDate.fullYear;
+				currentMonth = printDate.selectedDate.month;
+				currentDay = printDate.selectedDate.date;
+			}
+			/////////////////////////////////////打印参数准备完成/////////////////////////////////////////////		
+			
+			/////////////////////////////////////打印开始////////////////////////////////////////////////
+			protected function print_clickHandler(event:MouseEvent):void
+			{
+				this.addEventListener("bitMapClipComplete",bitMapClipCompleteHandler);
+				getPrintBitmapData();
+			}
+			
+			private function bitMapClipCompleteHandler(event:Event):void
+			{
+				this.removeEventListener("bitMapClipComplete",bitMapClipCompleteHandler);
+				CreatImage();
+				if(this.images.length==1)
+				{
+					var printObj:FlexPrintJob = new FlexPrintJob();
+					//按位图或者矢量格式进行打印
+					printObj.printAsBitmap = true;
+					if (printObj.start())
+					{
+						try
+						{		
+							parentContent.addElement(images[0]);
+							printObj.addObject(images[0], FlexPrintJobScaleType.NONE);
+						}
+						catch (error:Error)
+						{
+							Alert.show(error.toString());
+						}
+						printObj.send(); 
+						parentContent.removeElement(images[0]);
+					}
+				}
+				else if(this.images.length >1)
+				{
+					var file:FileReference = new FileReference();
+					var arrCo:ArrayCollection = new ArrayCollection();
+					var imageCoder:IImageEncoder;
+					imageCoder = new PNGEncoder();
+					for each(var arr:Array in vArr)
+					{
+						var arr2:Array = new Array();
+						for each(var bitData:BitmapData in arr)
+						{
+							var imageSnapshot:ImageSnapshot = ImageSnapshot.captureImage(new Bitmap(bitData), 0, imageCoder);
+							arr2.push(imageSnapshot.data);
+						}
+						arrCo.addItem(arr2);
+					}
+					exportPictureFileReference(arrCo,file,"printImages.zip");
+				}
+			}
+			
+			private function exportPictureFileReference(datas:ArrayCollection, file:FileReference,defaultFileName:String):void{
+				
+				file.addEventListener(Event.COMPLETE,function(evt:Event):void{
+					Alert.show("导出完毕!");
+				});
+				var zip:FZip=new FZip();    //创建zip文档
+				var datas1:ByteArray=new ByteArray();
+				var fileName:String;
+				for(var n:int = 0; n<datas.length; n++)
+				{
+					var arr:Array = datas[n];
+					for(var m:int =0; m<arr.length; m++)
+					{
+						fileName = n + "_" + m + ".png";
+						zip.addFile(fileName,arr[m]);  
+					}
+				}
+				zip.serialize(datas1);      //序列化zip文档
+				file.save(datas1,defaultFileName);    //保存zip文档
+			}
+			
+			private var _viewWidth:Number;
+			private var _viewHeight:Number;
+			private var _result:Array;
+			private var _bitmapSize:Number = 2880;
+			private var printWidth:Number;
+			private var printHeight:Number;
+			private var _tileSize:int = 512;
+			//截图
+			public function getPrintBitmapData():void
+			{
+				_viewWidth = printFinalContent.width;
+				_viewHeight = printFinalContent.height;
+				_result = new Array;
+				var col:int = Math.ceil(_viewWidth/_bitmapSize);
+				var row:int = Math.ceil(_viewHeight/_bitmapSize);
+				var x:Number = 0;
+				var y:Number = 0;
+				parentContent.width = _tileSize;
+				parentContent.height = _tileSize;
+				
+				for(var i:int = 0; i < row; i++)
+				{
+					var rowArr:Array = new Array;
+					y = i * _bitmapSize;
+					parentContent.height = (i + 1)*_bitmapSize > _viewHeight ? _viewHeight - i * _bitmapSize:_bitmapSize ;
+					for(var j:int = 0; j < col; j++)
+					{
+						x = j*_bitmapSize;
+						printFinalContent.x = -x;
+						printFinalContent.y = -y;
+						parentContent.width = (j + 1)*_bitmapSize > _viewWidth ? _viewWidth - j * _bitmapSize :_bitmapSize;
+						
+						var bitMap:BitmapData = ImageSnapshot.captureBitmapData(parentContent,null,null,null,
+							new Rectangle(0,0,parentContent.width,parentContent.height));
+						rowArr.push(bitMap);//存储每行
+					}
+					_result.push(rowArr);//存储所有行
+				}
+				
+				printFinalContent.x = 0;
+				printFinalContent.y = 0;
+				parentContent.width = undefined;
+				parentContent.height = undefined;
+				this.dispatchEvent(new Event("bitMapClipComplete"));
+			}
+			
+			private var images:Array;
+			private var vArr:Array;
+			//生成图片
+			private function CreatImage():void
+			{
+				var vGroup:VGroup = new VGroup();
+				vGroup.gap = 0;
+				vArr = null;
+				images = null;
+				vArr = new Array();
+				images = new Array();
+				for each(var arr:Array in _result)
+				{
+					var hGroup:HGroup = new HGroup();
+					hGroup.gap = 0;
+					var hArr:Array = new Array();
+					for each(var bitmapData:BitmapData in arr)
+					{
+						var image:Image = new Image();
+						image.source = new Bitmap(bitmapData);
+						hGroup.addElement(image);
+						images.push(image);
+						hArr.push(bitmapData);
+					}
+					vGroup.addElement(hGroup);
+					vArr.push(hArr);
+				}
+			}
+			/////////////////////////////////////打印结束////////////////////////////////////////////////
+			
+			/////////////////////////////////////////辅助工具/////////////////////////////////////////////////////
+			//用于NumericStepper组件，设置数据显示格式
+			private function formatValueNum(value:Number):String
+			{
+				return value.toFixed(2);
+			}
+			
+			
+			//将地图比例尺转换为DropDownList可识别的数据
+			private function convertMapScales():ArrayList
+			{
+				var finalScales:ArrayList;
+				if(this.map)
+				{
+					initialScale = Math.round(1/map.scale);
+					if(this.map.scales)
+					{
+						finalScales = new ArrayList();
+						for each(var num:Number in this.map.scales)
+						{
+							finalScales.source.push(1/num);
+						}
+					}
+				}
+				return finalScales;
+			}
+			
+			//由于打印的原始大小可能会很大，在电脑屏幕中无法全局浏览到打印内容的整体布局，
+			//因此该方法主要是为了进行原始打印与全局视图之间的切换
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				if(this.currentState == 'preView')
+				{
+					return;
+				}
+				var bitMapDate:BitmapData = ImageSnapshot.captureBitmapData(printFinalContent,null,null,null,
+					new Rectangle(0,0,printFinalContent.width,printFinalContent.height));
+				var bitMap:Bitmap =  new Bitmap(bitMapDate);
+				printEntirePictureSrc = bitMap;
+				printEntirePictureWth = bitMap.width > scrollerWindow.width ? scrollerWindow.width : bitMap.width;
+				printEntirePictureHth = bitMap.height > scrollerWindow.height ? scrollerWindow.height : bitMap.height;
+				this.currentState = 'image'==this.currentState?'print':'image';
+			}
+			
+		]]>
+	</fx:Script>
+	<!--PrintWindow界面分两部分：1.左侧参数设置面板：该面板主要用于设置打印所需的一些参数，如：打印标题、日期、范围、比例尺等。
+	2.右侧预览面板：该面板主要用于预览打印效果，分为全局效果，原始效果。
+	注意：PrintWindow在初始化状态时，仅显示左侧面板，当您确认参数设置完成后，点击“预览”按钮即可显示右侧预览面板-->
+	<!--左侧参数设置面板-->
+	<s:Group height="100%" width="20%">
+		<s:VGroup gap="7" width="100%">
+			<mx:FormHeading label="常规设置"/>
+			<mx:Form paddingTop="0" paddingBottom="0" verticalGap="5" width="100%">
+				<mx:FormItem direction="horizontal">
+					<s:Label text="图名：" verticalAlign="middle" height="22"/>
+					<s:TextInput text="世界地图" toolTip="{printName.text}"  id="printName" width="100%"/>
+				</mx:FormItem>
+				<mx:FormItem direction="horizontal">
+					<s:Label text="单位：" height="22" verticalAlign="middle"/>
+					<s:TextInput text="北京超图软件股份有限公司" id="companyName" width="100%" toolTip="{companyName.text}"/>
+				</mx:FormItem>
+				<mx:FormItem direction="horizontal">
+					<s:Label text="日期：" height="22" verticalAlign="middle"/>
+					<mx:DateField id="printDate" formatString="YYYY/MM/DD" selectedDate="{new Date()}" width="130"/>
+				</mx:FormItem>
+			</mx:Form>
+			<local:HorizontalRule id="test" width="100%" horizontalCenter="0"/>
+			<mx:FormHeading label="打印范围"/>
+			<mx:Form paddingTop="0" paddingBottom="0" verticalGap="5" width="100%">
+				<mx:FormHeading label="打印尺寸（像素）："/>
+				<mx:FormItem direction="vertical" horizontalAlign="center" width="100%">
+					<s:TextInput id="printSize" editable="false" text="{printWth.toString() + &quot;,&quot; +printHth.toString()}" width="70%"/>
+				</mx:FormItem>
+				<mx:FormHeading label="地理范围："/>
+				<mx:FormItem direction="vertical">
+					<s:VGroup gap="2">
+						<s:HGroup gap="2">
+							<s:Label text="X1:" width="20" verticalAlign="middle" verticalCenter="-2" height="100%"/>
+							<s:NumericStepper id="x1" toolTip="{x1.value.toString()}" value="{printBonds.left}" snapInterval="1" width="70" valueFormatFunction="formatValueNum" minimum="-20037508.3427892" maximum="20037508.3427892"/>
+							<s:Label text="Y1:" width="20" verticalAlign="middle" verticalCenter="-2" height="100%"/>
+							<s:NumericStepper id="y1" toolTip="{y1.value.toString()}" value="{printBonds.top}" snapInterval="1" width="70" valueFormatFunction="formatValueNum" minimum="-20037508.3427892" maximum="20037508.3427892"/>
+						</s:HGroup>
+						<s:HGroup gap="2">
+							<s:Label text="X2:" width="20" verticalAlign="middle" verticalCenter="-2" height="100%"/>
+							<s:NumericStepper id="x2" toolTip="{x2.value.toString()}" value="{printBonds.right}" snapInterval="1" width="70" valueFormatFunction="formatValueNum" minimum="-20037508.3427892" maximum="20037508.3427892"/>
+							<s:Label text="Y2:" width="20" verticalAlign="middle" verticalCenter="-2" height="100%"/>
+							<s:NumericStepper id="y2" toolTip="{y2.value.toString()}" value="{printBonds.bottom}" snapInterval="1" width="70" valueFormatFunction="formatValueNum" minimum="-20037508.3427892" maximum="20037508.3427892"/>
+						</s:HGroup>
+					</s:VGroup>
+				</mx:FormItem>
+			</mx:Form>
+			<local:HorizontalRule width="100%" horizontalCenter="0"/>
+			<mx:FormHeading label="显示打印比例尺"/>
+			<mx:Form paddingTop="0" paddingBottom="0" verticalGap="5" width="100%">
+				<mx:FormItem direction="vertical" horizontalAlign="center" width="100%">
+					<s:DropDownList selectedIndex="0" id="mapScales" width="120" height="30" 
+									dataProvider="{convertMapScales()}" 
+									selectedItem="{initialScale}">
+					</s:DropDownList>
+					<s:Label text="{&quot;当前显示比例尺  1:&quot; + mapScales.selectedItem.toString()}"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+			<local:HorizontalRule width="100%" horizontalCenter="0"/>
+		</s:VGroup>
+		<s:HGroup width="100%" bottom="0" horizontalAlign="right" paddingRight="5">
+			<s:Button label="预览" width="50" height="30" click="{previewClickHandler(event)}"/>
+			<s:Button label="打印" toolTip="提示：打印尺寸（宽/高）大于2880像素采用保存策略" width="50" height="30" click="print_clickHandler(event)" enabled.preView="false" enabled.image="false"/>
+			<s:Button label="全局" label.image="原始" label.print="全局" width="50" height="30" click="{button2_clickHandler(event)}" enabled.preView="false"/>
+		</s:HGroup>
+	</s:Group>
+	<!--中间分隔条-->
+	<local:VerticalRule includeIn="image,print" height="100%"/>
+	<!--右侧预览面板-->
+	<s:Scroller id="scrollerWindow" width="100%" height="100%" horizontalCenter="0" verticalCenter="0">
+		<s:Group>
+			<s:Group  id="parentContent">
+				<s:HGroup id="printFinalContent" horizontalAlign="center"  verticalAlign="middle" includeIn="print" alpha="0">
+					<s:VGroup  horizontalAlign="center" verticalAlign="middle">
+						<s:Label id="labelName" text="{printName.text}"  fontSize="30" textAlign="center" fontWeight="bold"/>
+						<supermap1:MapPrintContainer id="_printUtil" creationComplete="pinttUtilCreatComplete()"/>
+						<s:Group  fontSize="15" fontWeight="bold" width="100%">
+							<s:Label text="{&quot;比例尺  1:&quot; + mapScales.selectedItem.toString()}" left="0"/>
+							<s:HGroup right="0" gap="10">
+								<s:Label text="{currentYear + &quot;年&quot; + (currentMonth+1) + &quot;月&quot; + currentDay + &quot;日&quot;}"/>
+								<s:Label text="{companyName.text}"/>
+							</s:HGroup>
+						</s:Group>
+					</s:VGroup>
+					<s:Group id="legendContainer" height="100%" bottom="0" contentBackgroundAlpha="0">
+						<!--放legend控件-->
+					</s:Group>
+				</s:HGroup>
+				<mx:Image id="printEntirePicture" includeIn="image" horizontalAlign="center" verticalAlign="middle" source="{printEntirePictureSrc}"  width="{printEntirePictureWth}" height="{printEntirePictureHth}"/>
+			</s:Group>
+		</s:Group>
+	</s:Scroller>
+</s:HGroup>

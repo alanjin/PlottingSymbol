@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin name="CustomDropDownListSkin"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		alpha.disabled="0.5" width="60" height="40"> 
+	<!-- states -->
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="open" />
+		<s:State name="disabled" />
+	</s:states>
+	<!-- host component -->
+	<fx:Metadata>
+		<![CDATA[ 
+		[HostComponent("spark.components.DropDownList")]
+		]]>
+	</fx:Metadata> 
+	<!--- The PopUpAnchor control that opens the drop-down list. -->
+	<s:PopUpAnchor id="popUp"  displayPopUp.normal="false" displayPopUp.open="true" includeIn="open"
+				   left="0" right="0" top="0" bottom="0" itemDestructionPolicy="auto"
+				   popUpPosition="below" popUpWidthMatchesAnchorWidth="true" horizontalCenter="0">
+		<!--- The drop down area of the skin. This includes borders, background colors, scrollers, and filters. -->
+		<s:Group id="dropDown" maxHeight="134" minHeight="22" horizontalCenter="0"  >
+			<!-- drop shadow 阴影-->
+			<s:RectangularDropShadow blurX="20" blurY="20" alpha="1.0" distance="5" 
+									 angle="90" color="#000000" left="0" top="0" right="0" bottom="0"/>
+			<!-- border 边界-->
+			<s:Rect left="0" right="0" top="0" bottom="0" horizontalCenter="0">
+				<s:stroke>
+					<s:SolidColorStroke color="0x686868" weight="1"/>
+				</s:stroke>
+			</s:Rect>
+			<!-- fill 填充-->
+			<!--- Defines the appearance of drop-down list's background fill. -->
+			<s:Rect id="background" horizontalCenter="0">
+				<s:fill>
+					<!--- The color of the drop down's background fill. The default color is 0xFFFFFF. -->
+					<s:SolidColor id="bgFill" color="0xFFFFFF" />
+				</s:fill>
+			</s:Rect>
+			<s:Scroller left="0" top="0" right="0" bottom="0" focusEnabled="false" minViewportInset="1">
+				<!--- The container for the data items in the drop-down list. -->
+				<s:DataGroup id="dataGroup" itemRenderer="spark.skins.spark.DefaultItemRenderer">
+					<s:layout>
+						<s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
+					</s:layout>
+				</s:DataGroup>
+			</s:Scroller>
+		</s:Group>
+	</s:PopUpAnchor>
+	<!--- The anchor button used by the DropDownList. The default skin is DropDownListButtonSkin. -->
+	<s:Button id="openButton" left="0" right="0" top="0" bottom="0" focusEnabled="false"
+			  skinClass="spark.skins.spark.DropDownListButtonSkin" />  
+	<!--<s:BitmapImage source="../assets/drawPoint.png" verticalCenter="0" x="26" height.normal="40" verticalCenter.normal="0" width.normal="48" x.normal="10"/>-->
+	<!--<s:Image source="../assets/drawPoint.png" verticalCenter="0" x="26"/>-->
+	<s:BitmapImage source="{hostComponent.selectedItem.source}" 
+				   width="24" height="24" horizontalCenter="-8" verticalCenter="0"/>
+</s:Skin>
