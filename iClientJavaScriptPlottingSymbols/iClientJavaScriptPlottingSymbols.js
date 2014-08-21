@@ -2457,6 +2457,22 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
         return controlPoints;
     },
 
+    /**
+     * Method: drawComplete
+     * 绘制完成操作
+     * 当一个标绘扩展符号完成时调用此函数
+     *
+     */
+    drawComplete: function(){
+        this.finalize();
+        this.isDrawing = false;
+        this.controlPoints = [];
+
+        if(this.active == true){
+            this.layer.removeAllFeatures();
+        }
+    },
+
     CLASS_NAME: "SuperMap.Handler.Plotting"
 });/**
  * @requires SuperMap/Handler/Plotting.js
@@ -2562,10 +2578,7 @@ SuperMap.Handler.CircleEx = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 2){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
 
             return true;
@@ -2682,10 +2695,7 @@ SuperMap.Handler.CurveFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 2){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
             else{
                 this.isDrawing = false;
@@ -2846,10 +2856,7 @@ SuperMap.Handler.DiagonalArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
      * {Boolean} Allow event propagation
      */
     dblclick: function(evt) {
-        this.finalize();
-        this.isDrawing = false;
-        this.controlPoints = [];
-        this.layer.removeAllFeatures();
+        this.drawComplete();
         return false;
     },
 
@@ -3015,10 +3022,7 @@ SuperMap.Handler.DoubleArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 4){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
             else{
                 this.isDrawing = false;
@@ -3140,10 +3144,7 @@ SuperMap.Handler.RectFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 2){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
             else{
                 this.isDrawing = false;
@@ -3304,10 +3305,7 @@ SuperMap.Handler.StraightArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
      * {Boolean} Allow event propagation
      */
     dblclick: function(evt) {
-        this.finalize();
-        this.isDrawing = false;
-        this.controlPoints = [];
-        this.layer.removeAllFeatures();
+        this.drawComplete();
         return false;
     },
 
@@ -3419,10 +3417,7 @@ SuperMap.Handler.TriangleFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 2){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
             else{
                 this.isDrawing = false;

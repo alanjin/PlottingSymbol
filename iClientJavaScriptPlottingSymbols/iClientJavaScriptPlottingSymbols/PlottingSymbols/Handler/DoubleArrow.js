@@ -156,10 +156,7 @@ SuperMap.Handler.DoubleArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
                 this.isDrawing = true;
             }
             else if(len == 4){
-                this.finalize();
-                this.isDrawing = false;
-                this.controlPoints = [];
-                this.layer.removeAllFeatures();
+                this.drawComplete();
             }
             else{
                 this.isDrawing = false;

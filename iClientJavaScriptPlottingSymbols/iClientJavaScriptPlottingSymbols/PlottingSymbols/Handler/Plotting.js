@@ -621,5 +621,21 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
         return controlPoints;
     },
 
+    /**
+     * Method: drawComplete
+     * 绘制完成操作
+     * 当一个标绘扩展符号完成时调用此函数
+     *
+     */
+    drawComplete: function(){
+        this.finalize();
+        this.isDrawing = false;
+        this.controlPoints = [];
+
+        if(this.active == true){
+            this.layer.removeAllFeatures();
+        }
+    },
+
     CLASS_NAME: "SuperMap.Handler.Plotting"
 });

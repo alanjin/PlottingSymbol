@@ -141,10 +141,7 @@ SuperMap.Handler.StraightArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
      * {Boolean} Allow event propagation
      */
     dblclick: function(evt) {
-        this.finalize();
-        this.isDrawing = false;
-        this.controlPoints = [];
-        this.layer.removeAllFeatures();
+        this.drawComplete();
         return false;
     },
 

@@ -19,6 +19,10 @@
             height: 40px;
             padding-top:5;
         }
+		.butt:hover
+		{ 
+			background-color: #BFEFFF;
+		}
     </style>
     <script src='../libs/SuperMap.Include.js'></script>
     <script src='../iClientJavaScriptPlottingSymbols-min.js'></script>
@@ -156,15 +160,15 @@
 </head>
 <body onload="init()">
 <div id="toolbar" style= "text-align: center">
-    <img src="img/drawCircle.png"  title="圆"  onclick = "drawCircle()"/>
-    <img src="img/drawCurveFlag.png"  title="曲线旗标"  onclick = "drawCurveFlag()"/>
-    <img src="img/drawDiagonalArrow.png"  title="斜箭头"  onclick = "drawDiagonalArrow()"/>
-    <img src="img/drawDoubleArrow.png"  title="双箭头"  onclick = "drawDoubleArrow()"/>
-    <img src="img/drawRectFlag.png"  title="直角旗标"  onclick = "drawRectFlag()"/>
-    <img src="img/drawStraightArrow.png"  title="直箭头"  onclick = "drawStraightArrow()"/>
-    <img src="img/drawTriangleFlag.png"  title="三角旗标"  onclick = "drawTriangleFlag()"/>
-    <img src="img/updateEntity.png"  title="编辑符号"  onclick = "edit()"/>
-    <img src="img/clear.png"  title="清除"  onclick = "clearLabels()"/>
+    <img src="img/drawCircle.png" class="butt" title="圆"  onclick = "drawCircle()"/>
+    <img src="img/drawCurveFlag.png" class="butt" title="曲线旗标"  onclick = "drawCurveFlag()"/>
+    <img src="img/drawDiagonalArrow.png" class="butt" title="斜箭头"  onclick = "drawDiagonalArrow()"/>
+    <img src="img/drawDoubleArrow.png" class="butt" title="双箭头"  onclick = "drawDoubleArrow()"/>
+    <img src="img/drawRectFlag.png" class="butt" title="直角旗标"  onclick = "drawRectFlag()"/>
+    <img src="img/drawStraightArrow.png" class="butt" title="直箭头"  onclick = "drawStraightArrow()"/>
+    <img src="img/drawTriangleFlag.png" class="butt" title="三角旗标"  onclick = "drawTriangleFlag()"/>
+    <img src="img/updateEntity.png" class="butt" title="编辑符号"  onclick = "edit()"/>
+    <img src="img/clear.png" class="butt" title="清除"  onclick = "clearLabels()"/>
 </div>
 <div id="map"></div>
 </body>
