@@ -2,18 +2,22 @@
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoCircle.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoCurveFlag.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoDiagonalArrow.js
+..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoDoveTailDiagonalArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoDoubleArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoRectFlag.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoStraightArrow.js
+..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoDoveTailStraightArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\geometry\GeoTriangleFlag.js
 
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\Plotting.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\CircleEx.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\CurveFlag.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\DiagonalArrow.js
+..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\DoveTailDiagonalArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\DoubleArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\RectFlag.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\StraightArrow.js
+..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\DoveTailStraightArrow.js
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Handler\TriangleFlag.js
 
 ..\iClientJavaScriptPlottingSymbols\PlottingSymbols\Control\PlottingEdit.js
