@@ -22,6 +22,10 @@
 
 7.双箭头（GeoDoubleArrow）
 
+8.燕尾直箭头（GeoDoveTailStraightArrow）（仅js支持）
+
+9.燕尾斜箭头（GeoDoveTailDiagonalArrow）（仅js支持）
+
 
 ### 三、使用说明
 
