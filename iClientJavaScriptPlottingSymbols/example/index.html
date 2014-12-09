@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -32,11 +32,9 @@
                 drawGeoCircle,
                 drawGeoCurveFlag,
                 drawGeoDiagonalArrow,
-                drawGeoDoveTailDiagonalArrow,
                 drawGeoDoubleArrow,
                 drawGeoRectFlag,
                 drawGeoStraightArrow,
-                drawGeoDoveTailStraightArrow,
                 drawGeoTriangleFlag,
                 plottingEdit;
 
@@ -67,11 +65,9 @@
             drawGeoCircle = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.CircleEx);
             drawGeoCurveFlag = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.CurveFlag);
             drawGeoDiagonalArrow = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.DiagonalArrow);
-            drawGeoDoveTailDiagonalArrow = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.DoveTailDiagonalArrow);
             drawGeoDoubleArrow = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.DoubleArrow);
             drawGeoRectFlag = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.RectFlag);
             drawGeoStraightArrow = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.StraightArrow);
-           drawGeoDoveTailStraightArrow = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.DoveTailStraightArrow);
             drawGeoTriangleFlag = new SuperMap.Control.DrawFeature(vectorLayer, SuperMap.Handler.TriangleFlag);
 
             //新建标绘扩展符号编辑控件
@@ -88,11 +84,9 @@
                 drawGeoCircle,
                 drawGeoCurveFlag,
                 drawGeoDiagonalArrow,
-               drawGeoDoveTailDiagonalArrow,
                 drawGeoDoubleArrow,
                 drawGeoRectFlag,
                 drawGeoStraightArrow,
-                drawGeoDoveTailStraightArrow,
                 drawGeoTriangleFlag,
                 plottingEdit
             ]);
@@ -108,11 +102,9 @@
             drawGeoCircle.deactivate();
             drawGeoCurveFlag.deactivate();
             drawGeoDiagonalArrow.deactivate();
-             drawGeoDoveTailDiagonalArrow.deactivate();
             drawGeoDoubleArrow.deactivate();
             drawGeoRectFlag.deactivate();
             drawGeoStraightArrow.deactivate();
-            drawGeoDoveTailStraightArrow.deactivate();
             drawGeoTriangleFlag.deactivate();
             plottingEdit.deactivate();
         }
@@ -132,12 +124,6 @@
             allDeActivate();
             drawGeoDiagonalArrow.activate();
         }
-          //绘制燕尾尾巴斜箭头
-        function drawDoveTailDiagonalArrow(){
-            allDeActivate();
-            drawGeoDoveTailDiagonalArrow.activate();
-        }
-
         //绘制双箭头
         function drawDoubleArrow(){
             allDeActivate();
@@ -152,11 +138,6 @@
         function drawStraightArrow(){
             allDeActivate();
             drawGeoStraightArrow.activate();
-        }
-        //绘制燕尾尾巴直箭头
-        function drawDoveTailStraightArrow(){
-            allDeActivate();
-            drawGeoDoveTailStraightArrow.activate();
         }
         //绘制三角旗标
         function drawTriangleFlag(){
@@ -182,11 +163,9 @@
     <img src="img/drawCircle.png" class="butt" title="圆"  onclick = "drawCircle()"/>
     <img src="img/drawCurveFlag.png" class="butt" title="曲线旗标"  onclick = "drawCurveFlag()"/>
     <img src="img/drawDiagonalArrow.png" class="butt" title="斜箭头"  onclick = "drawDiagonalArrow()"/>
-    <img src="img/drawDoveTailDiagonalArrow.png" class="butt" title="燕尾斜箭头"  onclick = "drawDoveTailDiagonalArrow()"/>
     <img src="img/drawDoubleArrow.png" class="butt" title="双箭头"  onclick = "drawDoubleArrow()"/>
     <img src="img/drawRectFlag.png" class="butt" title="直角旗标"  onclick = "drawRectFlag()"/>
     <img src="img/drawStraightArrow.png" class="butt" title="直箭头"  onclick = "drawStraightArrow()"/>
-    <img src="img/drawDoveTailStraightArrow.png" class="butt" title="燕尾直箭头"  onclick = "drawDoveTailStraightArrow()"/>
     <img src="img/drawTriangleFlag.png" class="butt" title="三角旗标"  onclick = "drawTriangleFlag()"/>
     <img src="img/updateEntity.png" class="butt" title="编辑符号"  onclick = "edit()"/>
     <img src="img/clear.png" class="butt" title="清除"  onclick = "clearLabels()"/>

@@ -4,22 +4,18 @@
     inputScript('geometry/GeoCircle.js');
     inputScript('geometry/GeoCurveFlag.js');
     inputScript('geometry/GeoDiagonalArrow.js');
-    inputScript('geometry/GeoDoveTailDiagonalArrow.js');
     inputScript('geometry/GeoDoubleArrow.js');
     inputScript('geometry/GeoRectFlag.js');
     inputScript('geometry/GeoStraightArrow.js');
-    inputScript('geometry/GeoDoveTailStraightArrow.js');
     inputScript('geometry/GeoTriangleFlag.js');
 
     inputScript('Handler/Plotting.js');
     inputScript('Handler/CircleEx.js');
     inputScript('Handler/CurveFlag.js');
     inputScript('Handler/DiagonalArrow.js');
-    inputScript('Handler/DoveTailDiagonalArrow.js');
     inputScript('Handler/DoubleArrow.js');
     inputScript('Handler/RectFlag.js');
     inputScript('Handler/StraightArrow.js');
-    inputScript('Handler/DoveTailStraightArrow.js');
     inputScript('Handler/TriangleFlag.js');
 
     inputScript('Control/PlottingEdit.js');

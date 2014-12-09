@@ -8,5 +8,3 @@ iClientJavaScriptPlottingSymbols.js是合并未压缩的库，iClientJavaScriptPlottingSy
 (iClientJavaScriptPlottingSymbols.js或iClientJavaScriptPlottingSymbols-min.js已存在，它们将被删除后重新生成)
 
 3.yuicompressor-2.4.2.jar 是.js文件压缩工具。
-
-4.执行mergeAndCompressCode.bat，如果出现“不是内部或者外部命令，也不是可运行的程序或者批处理”的情况，那么在相同目录下新建一个.bat文件，将mergeAndCompressCode里面的内容复制到新的.bat文件中，执行新的.bat文件。
