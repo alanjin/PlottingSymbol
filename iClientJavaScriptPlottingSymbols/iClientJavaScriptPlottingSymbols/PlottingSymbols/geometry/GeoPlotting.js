@@ -7,7 +7,7 @@
 /**
  *
  * Class: SuperMap.Geometry.GeoPlotting
- * 标绘扩展符号类。
+ * 标绘扩展面符号类。
  * 该类是抽象类，具体的符号由其子类表现。子类必须实现方法 calculateParts()。
  *
  * Inherits from:
@@ -103,7 +103,22 @@ SuperMap.Geometry.GeoPlotting = SuperMap.Class(
 
             return "{\"controlPoints\":[" + arr.join(",") + "]}";
         },
+        /**
+         * Method: calculateMidpoint
+         * 计算两个点所连成的线段的的中点
+         *
+         * Parameters:
+         * pointA - {<SuperMap.Geometry.Point>} 第一个点
+         * pointB -  {<SuperMap.Geometry.Point>} 第二个点
+         *
+         * Returns:
+         * {<SuperMap.Geometry.Point>} 返回中点
+         */
+        calculateMidpoint: function (pointA, pointB) {
+            var midPoint = new SuperMap.Geometry.Point((pointA.x + pointB.x) / 2, (pointA.y + pointB.y) / 2);
+            return midPoint;
 
+        },
         /**
          * APIMethod: calculateParts
          * 通过控制点计算标绘扩展符号所有点 。
@@ -307,6 +322,57 @@ SuperMap.Geometry.GeoPlotting = SuperMap.Class(
         },
 
         /**
+         * Method: calculateDistance
+         * 计算两点间的距离
+         *
+         * Parameters:
+         * pointA - {<SuperMap.Geometry.Point>} 第一个点
+         * pointB -  {<SuperMap.Geometry.Point>} 第二个点
+         *
+         * Returns:
+         * {<SuperMap.Geometry.Point>} 返回两点间的距离值
+         */
+        calculateDistance: function (pointA, pointB) {
+            var distance =Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2));
+            return distance;
+
+        },
+
+
+        /**
+         * Method: calculateArc
+         * 根据圆心、半径，与X轴的起点角和终点角计算圆弧。
+         *
+         * Parameters:
+         * center - {<SuperMap.Geometry.Point>} 圆心
+         * radius - {Number}半径
+         * startAngle - {Number}起点角,范围为0到2π。
+         * endAngle - {Number}终点角,范围为0到2π。
+         * direction - {Number}从起点到终点的方向，其值为1：逆时针，其值为-1：顺时针。默认为1，即逆时针。
+         * sides - {Number}圆弧所在圆的点数，默认为360个，即每1°一个点。
+         *
+         * Returns:
+         * {Array(<SuperMap.Geometry.Point>)} 圆弧上的点数组
+         */
+        calculateArc: function(center,radius, startAngle,endAngle,direction,sides){
+            if(!direction ||(direction!=1 && direction!=-1)) direction=-1;
+            if(!sides) sides=360;
+            var step=Math.PI/sides/2;
+            var stepDir= step*direction;
+            var length=Math.abs(endAngle-startAngle);
+            var points=[];
+            for(var radians =startAngle,i = 0; i <length;i+=step)
+            {
+                var circlePoint = new SuperMap.Geometry.Point(Math.cos(radians) * radius + center.x, Math.sin(radians) * radius + center.y);
+                points.push(circlePoint);
+                radians+=stepDir;
+                radians=radians<0?(radians+2*Math.PI):radians;
+                radians=radians> 2*Math.PI?(radians-2*Math.PI):radians;
+
+            }
+           return points;
+        },
+        /**
          * Method: cloneControlPoints
          * 克隆控制点数组
          *
@@ -317,7 +383,6 @@ SuperMap.Geometry.GeoPlotting = SuperMap.Class(
             for(var i = 0; i < cp.length; i++){
                 controlPoints.push(cp[i].clone());
             }
-
             return controlPoints;
         },
 

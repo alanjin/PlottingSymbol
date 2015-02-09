@@ -8,8 +8,8 @@
  * 绘制态势符号的事件处理器（抽象类）
  * 该处理器会触发标记为"done"、"cancel"和“modify"的事件回调。其中modify回调会在每一次变化时被调用并传入最近一次绘制的点。
  *
- * Inherits from:
- *  - <SuperMap.Handler>
+* Inherits from:
+ *  - <SuperMap.Handler.Plotting>
  */
 SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
     /**
@@ -136,6 +136,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
      */
     initialize: function(control, callbacks, options) {
         if(!(options && options.layerOptions && options.layerOptions.styleMap)) {
+            if(!this.style)
             this.style = SuperMap.Util.extend(SuperMap.Feature.Vector.style['default'], {});
         }
 
@@ -158,7 +159,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
         this.plotting = null;
         this.isDrawing = false;
 
-        // create temporary vector layer for rendering geometry sketch
+        // create temporary vector layer for rendering Geometry sketch
         // TBD: this could be moved to initialize/destroy - setting visibility here
         var options = SuperMap.Util.extend({
             displayInLayerSwitcher: false,
@@ -216,7 +217,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
      *
      *  this.plotting = new SuperMap.Feature.Vector(
      *
-     *       //标绘扩展符号的 geometry 类型为 GeoCircle
+     *       //标绘扩展符号的 Geometry 类型为 GeoCircle
      *
      *      new SuperMap.Geometry.GeoCircle()
      *
@@ -287,7 +288,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
 
     /**
      * APIMethod: down
-     * Handle mousedown and touchstart.  Adjust the geometry and redraw.
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
      * Return determines whether to propagate the event on the map.
      *
      * Parameters:
@@ -308,7 +309,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
 
     /**
      * APIMethod: move
-     * Handle mousemove and touchmove.  Adjust the geometry and redraw.
+     * Handle mousemove and touchmove.  Adjust the Geometry and redraw.
      * Return determines whether to propagate the event on the map.
      *
      * Parameters:
@@ -418,7 +419,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
 
     /**
      * Method: finalize
-     * Finish the geometry and call the "done" callback.
+     * Finish the Geometry and call the "done" callback.
      *
      * Parameters:
      * cancel - {Boolean} Call cancel instead of done callback.  Default
@@ -444,7 +445,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
 
     /**
      * Method: getGeometry
-     * Return the sketch geometry.
+     * Return the sketch Geometry.
      *
      * Returns:
      * {<SuperMap.Geometry.Point>}
@@ -457,7 +458,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
 
     /**
      * Method: geometryClone
-     * Return a clone of the geometry.
+     * Return a clone of the Geometry.
      *
      * Returns:
      * {<SuperMap.Geometry>}

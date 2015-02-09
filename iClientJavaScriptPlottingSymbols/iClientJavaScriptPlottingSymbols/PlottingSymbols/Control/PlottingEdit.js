@@ -6,7 +6,7 @@
 /**
  * Class: SuperMap.Control.PlottingEdit
  * 标绘扩展符号编辑控件。
- * 
+ *
  * 该控件激活时，单击即可选中标绘扩展符号，被选中的符号将显示其控制点，拖拽这些控制点以编辑标绘扩展符号，拖拽符号本身平移符号。
  *
  * 通过 active 和 deactive 两个方法，实现动态的激活和注销。
@@ -209,6 +209,17 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
         return deactivated;
     },
 
+    isPlottingGeometry:function(feature){
+        if(feature.geometry instanceof SuperMap.Geometry.GeoPlotting
+            || feature.geometry instanceof SuperMap.Geometry.GeoLinePlotting
+            || feature.geometry instanceof SuperMap.Geometry.GeoMultiLinePlotting
+            || feature.geometry instanceof SuperMap.Geometry.GeoMultiPoint
+            || feature.geometry instanceof SuperMap.Geometry.GeoPoint)
+        return true;
+        else{
+            return false;
+        }
+    },
     /**
      * APIMethod: deleteSymbol
      * 删除标绘扩展符号 (选中)
@@ -237,7 +248,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      */
     selectFeature: function(feature) {
         if (this.beforeSelectFeature(feature) !== false) {
-            if(feature.geometry instanceof SuperMap.Geometry.GeoPlotting){
+            if(this.isPlottingGeometry(feature)){
                 this.feature = feature;
                 this.modified = false;
                 this.resetControlPoints();
@@ -287,8 +298,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * pixel - {<SuperMap.Pixel>} Pixel location of the mouse event.
      */
     dragStart: function(feature, pixel) {
-        if(feature != this.feature && feature.geometry instanceof SuperMap.Geometry.GeoPlotting
-            && this.feature.geometry instanceof SuperMap.Geometry.GeoPlotting) {
+        if(feature != this.feature && (this.isPlottingGeometry(feature))&&(this.isPlottingGeometry(this.feature))) {
             if(this.feature) {
                 this.selectControl.clickFeature.apply(this.selectControl,
                     [this.feature]);
@@ -324,14 +334,21 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
 
             //拖拽控制点过程中改变符号的Geometry
             var geo = this.feature.geometry;
+
+            var ids=[];
+            for(var i=0;i<geo.components.length;i++){
+                ids.push(geo.components[i].id) ;
+            }
             geo._controlPoints = this.getCpGeos();
             geo.calculateParts();
-
+            for(var i=0;i<geo.components.length;i++){
+                geo.components[i].id=ids[i];
+            }
             //绘制符号及控制点
             this.layer.drawFeature(this.feature);
             this.layer.drawFeature(cp);
         }
-         else if(cp.geometry instanceof SuperMap.Geometry.GeoPlotting){
+         else if(this.isPlottingGeometry(cp)){
             this.modified = true;
 
             //平移的时候不显示控制点
@@ -351,7 +368,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
             }
             var geo = this.feature.geometry;
             geo._controlPoints = cps;
-            //geo.calculateParts();
+            if(geo.isMultiPlotting)   geo.calculateParts();
             this._dragPixel = pixel;
         }
     },
@@ -396,7 +413,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
 
     /**
      * Method: collectControlPoints
-     * Collect the control points from the modifiable plotting symbol's geometry and push
+     * Collect the control points from the modifiable plotting symbol's Geometry and push
      *     them on to the control's controlPoints array.
      */
     collectControlPoints: function() {
@@ -404,10 +421,12 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
         this.controlPoints = [];
         var control = this;
 
-        //重设符号 geometry 的 控制点
+        //重设符号 Geometry 的 控制点
         function collectGeometryControlPoints(geometry) {
             var i, controlPoi, cp;
-            if(geometry instanceof SuperMap.Geometry.GeoPlotting){
+            if(geometry instanceof SuperMap.Geometry.GeoPlotting || geometry instanceof SuperMap.Geometry.GeoLinePlotting
+                || geometry instanceof SuperMap.Geometry.GeoPoint|| geometry instanceof SuperMap.Geometry.GeoMultiPoint
+                || geometry instanceof SuperMap.Geometry.GeoMultiLinePlotting){
                 var numCont = geometry._controlPoints.length;
                 for(i=0; i<numCont; ++i) {
                     cp = geometry._controlPoints[i];
@@ -480,12 +499,11 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
 
     /**
      * Method: controlPointsToJSON
-     * 当前符号（this.feature）的控制点（geometry._controlPoints）转为json数据。
+     * 当前符号（this.feature）的控制点（Geometry._controlPoints）转为json数据。
      * (用于测试的方法)
      */
     controlPointsToJSON: function(){
-       if(this.feature && this.feature.geometry &&
-           this.feature.geometry instanceof SuperMap.Geometry.GeoPlotting){
+       if(this.feature && this.feature.geometry &&(this.isPlottingGeometry(this.feature))){
             return this.feature.geometry.toJSON();
        }
     },
