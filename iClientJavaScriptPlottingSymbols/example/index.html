@@ -37,12 +37,12 @@ function init() {
     setLogoTitle("1,JavaScript 态势标绘")
     Bev.Theme.set("bev-base");
     initDemo();
-    window.center = new SuperMap.LonLat(-43.891083007659, -32.905487920709);
-    window.zoom = 1;
+    window.center = new SuperMap.LonLat(7724209,3228485);
+    window.zoom = 3;
     window.mapControlList = getMapControlList("1,2,3,4,5", 3);
 
     window.overlayParams = [];
-    createMap("iserver", {"url": "http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World", "layerName": "World"});
+     createMap("supermapCloud",null);
 
     addMeasure(1);
     addGeolocate(1);

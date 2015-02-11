@@ -17,55 +17,25 @@
 SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
 
     /**
-     * APIProperty: zoomInIconClass
+     * Property: zoomInId
      * {String}
-     * 加号按钮CSS Class
+     * 加号按钮的dom id
      */
-    zoomInIconClass: "glyphicon-plus-sign",
+    zoomInId: "smZoomInLink",
 
     /**
-     * APIProperty: zoomOutIconClass
+     * Property: zoomOutId
      * {String}
-     * 减号按钮CSS Class
+     * 减号按钮的dom id
      */
-    zoomOutIconClass: "glyphicon-minus-sign",
-
+    zoomOutId: "smZoomOutLink",
+    
     /**
-     * APIProperty: offsetPX
-     * {Object}
-     * 控件的位置
-     *
-     * (code)
-     * new SuperMap.Control.BZoom({
-     *     "offsetPX":{
-     *         "left":"10px",    //"right":"10px"
-     *         "top":"10px"      //"bottom":"10px"
-     *     }
-     * });
-     * (end)
-     */
-    offsetPX: null,
-
-    /**
-     * APIProperty: body
-     * {DOMElement} 控件dom元素
-     *
+     * Property: body
+     * {DOMElement}
+     * 
      */
     body:null,
-
-    /**
-     * Property: zoomInBtn
-     * {HTMLElement}
-     * 加号按钮
-     */
-    zoomInLink: null,
-
-    /**
-     * Property: zoomOutBtn
-     * {HTMLElement}
-     * 减号按钮
-     */
-    zoomOutLink: null,
 
     /**
      * Method: draw，创建缩放控件
@@ -79,7 +49,12 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
             zoomIn = links.zoomIn,
             zoomOut = links.zoomOut,
             eventsInstance = this.map.events;
-
+        
+//        if (zoomOut.parentNode !== div) {
+//            eventsInstance = this.events;
+//            eventsInstance.attachToElement(zoomOut.parentNode);
+//        }
+//        eventsInstance.register("buttonclick", this, this.onZoomClick);
         var handler = function(me){
             return function(evt){
                 me.buttonClick(evt);
@@ -87,99 +62,87 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
         }(this);
         SuperMap.Event.observe(zoomOut.parentNode, "mousedown", SuperMap.Function.bindAsEventListener(handler, zoomOut.parentNode));
         SuperMap.Event.observe(zoomOut.parentNode, "touchstart", SuperMap.Function.bindAsEventListener(handler, zoomOut.parentNode));
-
+        
         this.zoomInLink = zoomIn;
         this.zoomOutLink = zoomOut;
-
-        this.mouseEvent();
         return div;
     },
 
-
+    
     /**
      * Method: getOrCreateLinks 创建加减号按钮
-     *
+     * 
      * Parameters:
      * el - {DOMElement} 父容器
      *
-     * Return:
+     * Return: 
      * {Object} Object with zoomIn and zoomOut properties referencing links.
      */
     getOrCreateLinks: function(el) {
-        var b,s;
+    	  var zoomIn = document.getElementById(this.zoomInId),
+            zoomOut = document.getElementById(this.zoomOutId),b,s;
         b = this.body;
         if(!b){
             b = document.createElement("div");
-           // $(b).addClass("ui-state-default ui-corner-all");
             el.appendChild(b);
             s = b.style;
-            if(this.offsetPX){
-                for(var key in this.offsetPX){
-                    s[key] = this.offsetPX[key];
-                }
-            }
-            else{
-                s.left = "10px";
-                s.top = "10px";
-            }
+            s.left = "10px";
+            s.top = "50px";
             s.position = "absolute";
             this.body = b;
         }
-        if (!this.zoomInLink) {
-            var tps = this.createBtn(b,this.zoomInIconClass,"smControlZoomIn");
-            this.zoomInLink = tps[0];
-            this.zoomInLinkSp = tps[1];
-            $(this.zoomInLink).css({
-                "border-bottom":"0px solid"
-            }).addClass("ui-corner-top");
+        if (!zoomIn) {
+            zoomIn = this.createBtn(b,"zoom-plus-mini.png","smControlZoomIn");
         }
-        SuperMap.Element.addClass(this.zoomInLink, "smButton");
-        if (!this.zoomOutLink) {
-            var tps = this.createBtn(b,this.zoomOutIconClass,"smControlZoomOut");
-            this.zoomOutLink = tps[0];
-            this.zoomOutLinkSp = tps[1];
-            $(this.zoomOutLink).css({
-                "border-top":"0px solid"
-            }).addClass("ui-corner-bottom");
+        SuperMap.Element.addClass(zoomIn, "smButton");
+        if (!zoomOut) {
+            zoomOut = this.createBtn(b,"zoom-minus-mini.png","smControlZoomOut");
         }
-        SuperMap.Element.addClass(this.zoomOutLink, "smButton");
+        SuperMap.Element.addClass(zoomOut, "smButton");
         return {
-            zoomIn: this.zoomInLink, zoomOut: this.zoomOutLink
+            zoomIn: zoomIn, zoomOut: zoomOut
         };
     },
-
+    
     /**
      * Method: createBtn 创建加减号按钮
-     *
+     * 
      * Parameters:
      * p - {DOMElement} 父容器
-     * m - {String} 图标class
+     * m - {String} 图片名称
      * c - {String} 样式名称
      *
-     * Return:
+     * Return: 
      * {DOMElement} 创建好的按钮对象.
      */
     createBtn: function(p,m,c){//container imgName className
-        var a, b,d = document,s;
-
+        var a,d = document,s;
+        
         a = d.createElement("div");
         a.className = c;
         s = a.style;
+        s.width = "34px";
+        s.height = "30px";
         s.cursor = "pointer";
-        s.padding = "2px";
         p.appendChild(a);
-        $(a).addClass("ui-state-default").css({"border":"0px solid"});
+        
+        b = d.createElement("img");
+        s = b.style;
+        s.width = "34px";
+        s.height = "30px";
+        //控件的样式
+        if(SuperMap.Control.SKIN==="BLUE"){
+            b.src = SuperMap.Util.getImagesLocation() +"controlSkinBlue/"+ m;
+        }
+        else{
+            b.src = SuperMap.Util.getImagesLocation() +"controlSkinWhite/"+ m;
+        }
 
-        b = d.createElement("span");
-        $(b).addClass(m).addClass("glyphicon")
-            .css({
-                "font-size":"26px"
-            });
         a.appendChild(b);
-
-        return [a,b];
+        
+        return a;
     },
-
+    
     /**
      * Method: onZoomClick
      * 当点击按钮时调用.
@@ -192,7 +155,7 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
             this.map.zoomOut();
         }
     },
-
+    
     /**
      * Method: buttonClick
      * 处理鼠标事件.
@@ -207,8 +170,8 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
             }
         }
     },
-
-    /**
+    
+     /**
      * Method: getPressedButton
      * Get the pressed button, if any. Returns undefined if no button
      * was pressed.
@@ -233,7 +196,9 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
         return button;
     },
 
-    /**
+
+
+    /** 
      * APIMethod: destroy
      * 销毁Zoom控件，释放相关资源。
      */
@@ -246,104 +211,6 @@ SuperMap.Control.BZoom = SuperMap.Class(SuperMap.Control, {
         SuperMap.Control.prototype.destroy.apply(this);
     },
 
-    /**
-     * Method: mouseEvent
-     * 绑定按钮的mouseover和mouseout事件。
-     */
-    mouseEvent: function() {
-        var t = this;
-        if(this.zoomInLink&&this.zoomOutLink){
-            SuperMap.Event.observe(this.zoomInLink, "mouseover", SuperMap.Function.bindAsEventListener(function(){
-                handler("zoomInLink","mouseover");
-            }, this.zoomInLink));
-            SuperMap.Event.observe(this.zoomInLink, "mouseout", SuperMap.Function.bindAsEventListener(function(){
-                handler("zoomInLink","mouseout");
-            }, this.zoomInLink));
-            SuperMap.Event.observe(this.zoomOutLink, "mouseover", SuperMap.Function.bindAsEventListener(function(){
-                handler("zoomOutLink","mouseover");
-            }, this.zoomOutLink));
-            SuperMap.Event.observe(this.zoomOutLink, "mouseout", SuperMap.Function.bindAsEventListener(function(){
-                handler("zoomOutLink","mouseout");
-            }, this.zoomOutLink));
-        }
-
-        function handler(btn,e){
-            if(btn=="zoomInLink"){
-                if(e=="mouseover"){
-                    //t.zoomInLink.childNodes[0].src =  Bev.Util.getImgPath("h_zoom-plus.png");
-                    $(t.zoomInLink).addClass("ui-state-hover");
-                    //t._refreshIcon($(t.zoomInLinkSp), t.zoomInIconClass);
-                    $(t.zoomInLinkSp).css({
-                        "zoom":1
-                    });
-                    $(t.zoomInLink).css({
-                        "zoom":1
-                    });
-                }
-                else if(e=="mouseout"){
-                    //t.zoomInLink.childNodes[0].src =  Bev.Util.getImgPath("zoom-plus.png");
-                    $(t.zoomInLink).removeClass("ui-state-hover");
-                    t._refreshIcon($(t.zoomInLinkSp), t.zoomInIconClass);
-                    $(t.zoomInLinkSp).css({
-                        "zoom":1
-                    });
-                    $(t.zoomInLink).css({
-                        "zoom":1
-                    });
-                }
-            }
-            else if(btn=="zoomOutLink"){
-                if(e=="mouseover"){
-                    //t.zoomOutLink.childNodes[0].src =  Bev.Util.getImgPath("h_zoom-minus.png");
-                    $(t.zoomOutLink).addClass("ui-state-hover");
-                    //t._refreshIcon($(t.zoomOutLinkSp), t.zoomOutIconClass);
-                    $(t.zoomOutLinkSp).css({
-                        "zoom":1
-                    });
-                    $(t.zoomOutLink).css({
-                        "zoom":1
-                    });
-                }
-                else if(e=="mouseout"){
-                    //t.zoomOutLink.childNodes[0].src =  Bev.Util.getImgPath("zoom-minus.png");
-                    $(t.zoomOutLink).removeClass("ui-state-hover");
-                    t._refreshIcon($(t.zoomOutLinkSp), t.zoomOutIconClass);
-                    $(t.zoomOutLinkSp).css({
-                        "zoom":1
-                    });
-                    $(t.zoomOutLink).css({
-                        "zoom":1
-                    });
-                }
-            }
-        }
-    },
-
-    _getIsIE8:function(){
-        if(!this.isIE8){
-            if($.browser){
-                if($.browser.msie){
-                    if($.browser.version=="8.0"){
-                        this.isIE8 = true;
-                    }
-                }
-            }
-        }
-        return !!this.isIE8;
-    },
-
-    _refreshIcon:function(btn,iconClass){
-        if(this._getIsIE8()){
-            if(btn){
-                window.setTimeout(function(btn,iconClass){
-                    return function(){
-                        btn.removeClass("glyphicon "+iconClass);
-                        btn.addClass("glyphicon "+iconClass);
-                    }
-                }(btn,iconClass),10);
-            }
-        }
-    },
 
     CLASS_NAME: "SuperMap.Control.BZoom"
 });

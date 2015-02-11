@@ -261,7 +261,7 @@ Bev.Measure = Bev.Class({
         if (order == 1) {
             this.showResult("长度：" + measure.toFixed(3) + units);
         } else {
-            this.showResult("面积：" + measure.toFixed(3) + units);
+            this.showResult("面积：" + measure.toFixed(3) + "k㎡");
         }
         this.deactivate();
     },

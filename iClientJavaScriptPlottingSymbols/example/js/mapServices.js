@@ -125,8 +125,8 @@
 
      function getSuperMapCloud(){
          var projection = "EPSG:3857";
-         var layer = new SuperMap.Layer.CloudLayer();
-
+         var layer = new SuperMap.Layer.CloudLayer({useCanvas:false});
+				
          return {
              "projection":projection,
              "layer":layer
