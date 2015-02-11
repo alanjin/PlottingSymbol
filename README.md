@@ -2,7 +2,7 @@
 标绘扩展符号库是一套基于SuperMap iClient 7C的基础库扩展的符号库，提供了常用复杂的几何对象，可以大大降低用户开发的难度和时间成本。现支持Flex和JavaScript两个产品。
 
 ![original_THmC_4b6f000174941190](images/flash.jpg)
-![original_THmC_4b6f000174941190](images/js.jpg)
+![original_THmC_4b6f000174941190](images/js.png)
 
 
 ### 二、支持的符号
