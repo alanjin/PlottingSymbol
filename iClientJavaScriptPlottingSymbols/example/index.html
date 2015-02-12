@@ -19,7 +19,6 @@
 <style type="text/css">
 
     #menuPlotting {
-        /*top:450px;*/
         left: 40px;
     }
 </style>
@@ -75,11 +74,36 @@ function addMenuPlotting() {
         pointRadius:6
 
     };
+    var stylePoint={
+        fillColor: "#323232",
+        fillOpacity: 0.4,
+        strokeColor: "#323232",
+        strokeOpacity: 0.8,
+        strokeWidth: 15,
+        strokeDashstyle: "dash"
+
+    };
+    var styleMultiPoint={
+        fillColor: "#323232",
+        fillOpacity: 1,
+        strokeColor: "#323232",
+        strokeOpacity: 1,
+        strokeWidth: 1,
+        pointRadius:8
+    };
+    var styleFlag={
+        fillColor: "#EA2D1B",
+        fillOpacity: 1,
+        strokeColor: "#EA2D1B",
+        strokeOpacity: 1,
+        strokeWidth: 2
+    };
+
 //    态势标绘编辑
     plottingEdit = new SuperMap.Control.PlottingEdit(plottingLayer);
     // 点标
-    drawGeoPoint = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.PointEx);
-    drawGeoMultiPoint = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.MultiPointEx);
+    drawGeoPoint = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.PointEx,{style:stylePoint});
+    drawGeoMultiPoint = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.MultiPointEx,{style:styleMultiPoint});
     // 线标
     drawGeoPolyline = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.PolyLineEx);
     drawGeoArc = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.ArcEx);
@@ -100,9 +124,9 @@ function addMenuPlotting() {
     drawGeoRoundedRect = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.RoundedRect);
     drawGeoCloseCurve = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.CloseCurve);
     //旗标
-    drawGeoCurveFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.CurveFlag);
-    drawGeoRectFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.RectFlag);
-    drawGeoTriangleFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.TriangleFlag);
+    drawGeoCurveFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.CurveFlag,{style:styleFlag});
+    drawGeoRectFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.RectFlag,{style:styleFlag});
+    drawGeoTriangleFlag = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.TriangleFlag,{style:styleFlag});
     //面状箭标
     drawGeoStraightArrow = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.StraightArrow);
     drawGeoDiagonalArrow = new SuperMap.Control.DrawFeature(plottingLayer, SuperMap.Handler.DiagonalArrow);

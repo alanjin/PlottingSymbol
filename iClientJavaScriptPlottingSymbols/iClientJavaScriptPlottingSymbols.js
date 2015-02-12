@@ -1966,7 +1966,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Property: defaultStyle
      * {Boolean} 控制点默认 style。
      */
-    defaultStyle:  {
+    defaultStyle: {
         fillColor: "#ee9900",
         fillOpacity: 0.4,
         strokeColor: "#ee9900",
@@ -2031,7 +2031,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * plottingEdit.activate();
      * (end)
      */
-    initialize: function(layer, options) {
+    initialize: function (layer, options) {
         options = options || {};
         this.layer = layer;
         this.controlPoints = [];
@@ -2054,17 +2054,17 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
 
         // configure the drag control
         var dragOptions = {
-            onStart: function(feature, pixel) {
+            onStart: function (feature, pixel) {
                 control.dragStart.apply(control, [feature, pixel]);
             },
-            onDrag: function(feature, pixel) {
-               control.dragControlPoint.apply(control, [feature, pixel]);
+            onDrag: function (feature, pixel) {
+                control.dragControlPoint.apply(control, [feature, pixel]);
             },
-            onComplete: function(feature) {
+            onComplete: function (feature) {
                 control.dragComplete.apply(control, [feature]);
             },
             featureCallbacks: {
-                over: function(feature) {
+                over: function (feature) {
                     control.dragControl.overFeature.apply(
                         control.dragControl, [feature]);
                 }
@@ -2079,7 +2079,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * APIMethod: destroy
      * 销毁该类，释放空间。
      */
-    destroy: function() {
+    destroy: function () {
         this.controlPoints = [];
         this.layer = null;
         this.selectControl.destroy();
@@ -2094,7 +2094,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Returns:
      * {Boolean} 激活控件是否成功。
      */
-    activate: function() {
+    activate: function () {
         return (this.selectControl.activate() &&
             SuperMap.Control.prototype.activate.apply(this, arguments));
     },
@@ -2106,17 +2106,17 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Returns:
      * {Boolean} 返回操作是否成功。
      */
-    deactivate: function() {
+    deactivate: function () {
         var deactivated = false;
         // the return from the controls is unimportant in this case
-        if(SuperMap.Control.prototype.deactivate.apply(this, arguments)) {
+        if (SuperMap.Control.prototype.deactivate.apply(this, arguments)) {
             this.layer.removeFeatures(this.controlPoints, {silent: true});
             this.controlPoints = [];
             this.dragControl.deactivate();
             var feature = this.feature;
             var valid = feature && feature.geometry && feature.layer;
 
-            if(valid) {
+            if (valid) {
                 this.selectControl.unselect.apply(this.selectControl,
                     [feature]);
             }
@@ -2127,14 +2127,14 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
         return deactivated;
     },
 
-    isPlottingGeometry:function(feature){
-        if(feature.geometry instanceof SuperMap.Geometry.GeoPlotting
+    isPlottingGeometry: function (feature) {
+        if (feature.geometry instanceof SuperMap.Geometry.GeoPlotting
             || feature.geometry instanceof SuperMap.Geometry.GeoLinePlotting
             || feature.geometry instanceof SuperMap.Geometry.GeoMultiLinePlotting
             || feature.geometry instanceof SuperMap.Geometry.GeoMultiPoint
             || feature.geometry instanceof SuperMap.Geometry.GeoPoint)
-        return true;
-        else{
+            return true;
+        else {
             return false;
         }
     },
@@ -2145,16 +2145,17 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Returns:
      * {Boolean} 返回操作是否成功。
      */
-    deleteSymbol: function(){
-        if(this.feature && this.controlPoints && this.controlPoints.length > 0){
+    deleteSymbol: function () {
+        if (this.feature && this.controlPoints && this.controlPoints.length > 0) {
             this.layer.destroyFeatures(this.feature);
             this.layer.destroyFeatures(this.controlPoints);
             this.unselectFeature(this.feature);
             return true;
         }
-        else{
+        else {
             return false;
-        };
+        }
+        ;
     },
 
     /**
@@ -2164,9 +2165,9 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Parameters:
      * feature - {<SuperMap.Feature.Vector>} 要选中的要素。
      */
-    selectFeature: function(feature) {
+    selectFeature: function (feature) {
         if (this.beforeSelectFeature(feature) !== false) {
-            if(this.isPlottingGeometry(feature)){
+            if (this.isPlottingGeometry(feature)) {
                 this.feature = feature;
                 this.modified = false;
                 this.resetControlPoints();
@@ -2182,7 +2183,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Parameters:
      * feature - {<SuperMap.Feature.Vector>} The unselected feature.
      */
-    unselectFeature: function(feature) {
+    unselectFeature: function (feature) {
         this.layer.removeFeatures(this.controlPoints, {silent: true});
         this.controlPoints = [];
         this.feature = null;
@@ -2201,7 +2202,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Parameters:
      * feature - {<SuperMap.Feature.Vector>} The feature（plotting symbol） about to be selected.
      */
-    beforeSelectFeature: function(feature) {
+    beforeSelectFeature: function (feature) {
         return this.layer.events.triggerEvent(
             "beforefeaturemodified", {feature: feature}
         );
@@ -2215,9 +2216,9 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * feature - {<SuperMap.Feature.Vector>} The control point or plotting symbol about to be dragged.
      * pixel - {<SuperMap.Pixel>} Pixel location of the mouse event.
      */
-    dragStart: function(feature, pixel) {
-        if(feature != this.feature && (this.isPlottingGeometry(feature))&&(this.isPlottingGeometry(this.feature))) {
-            if(this.feature) {
+    dragStart: function (feature, pixel) {
+        if (feature != this.feature && (this.isPlottingGeometry(feature)) && (this.isPlottingGeometry(this.feature))) {
+            if (this.feature) {
                 this.selectControl.clickFeature.apply(this.selectControl,
                     [this.feature]);
             }
@@ -2233,8 +2234,8 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
 
         this._dragPixel = pixel;
         //鼠标手势，IE7、8中需重新设置cursor
-        SuperMap.Element.removeClass(this.map.viewPortDiv, "smDragDown" );
-        this.map.viewPortDiv.style.cursor="pointer";
+        SuperMap.Element.removeClass(this.map.viewPortDiv, "smDragDown");
+        this.map.viewPortDiv.style.cursor = "pointer";
     },
 
     /**
@@ -2245,48 +2246,56 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * cp - {<SuperMap.Feature.Vector>} The control point being dragged.
      * pixel - {<SuperMap.Pixel>} Pixel location of the mouse event.
      */
-    dragControlPoint: function(cp, pixel) {
+    dragControlPoint: function (cp, pixel) {
         //拖拽控制点时编辑符号，拖拽符号本身时平移符号（平移符号的所有控制控制点）
-        if(cp.geometry.CLASS_NAME == "SuperMap.Geometry.Point") {
+        if (cp.geometry.CLASS_NAME == "SuperMap.Geometry.Point") {
             this.modified = true;
-
             //拖拽控制点过程中改变符号的Geometry
             var geo = this.feature.geometry;
+            if (geo.isMultiPlotting) {
+                var ids = [];
+                for (var i = 0; i < geo.components.length; i++) {
+                    ids.push(geo.components[i].id);
+                }
+                geo._controlPoints = this.getCpGeos();
+                geo.calculateParts();
+                for (var i = 0; i < geo.components.length; i++) {
+                    geo.components[i].id = ids[i];
+                }
+                //绘制符号及控制点
+                this.layer.drawFeature(this.feature);
+                this.layer.drawFeature(cp);
 
-            var ids=[];
-            for(var i=0;i<geo.components.length;i++){
-                ids.push(geo.components[i].id) ;
             }
-            geo._controlPoints = this.getCpGeos();
-            geo.calculateParts();
-            for(var i=0;i<geo.components.length;i++){
-                geo.components[i].id=ids[i];
+            else {
+                geo._controlPoints = this.getCpGeos();
+                geo.calculateParts();
+                //绘制符号及控制点
+                this.layer.drawFeature(this.feature);
+                this.layer.drawFeature(cp);
             }
-            //绘制符号及控制点
-            this.layer.drawFeature(this.feature);
-            this.layer.drawFeature(cp);
         }
-         else if(this.isPlottingGeometry(cp)){
+        else if (this.isPlottingGeometry(cp)) {
             this.modified = true;
 
             //平移的时候不显示控制点
             this.layer.removeFeatures(this.controlPoints, {silent: true});
 
             //当前位置
-            var lonLat=this.layer.getLonLatFromViewPortPx(pixel);
+            var lonLat = this.layer.getLonLatFromViewPortPx(pixel);
             //拖拽开始的位置
-            var ll=this.layer.getLonLatFromViewPortPx(this._dragPixel);
+            var ll = this.layer.getLonLatFromViewPortPx(this._dragPixel);
 
-            var cps =  this.getCpGeos();
-            for(var i = 0, len = cps.length; i < len; i ++){
+            var cps = this.getCpGeos();
+            for (var i = 0, len = cps.length; i < len; i++) {
                 var cp = cps[i];
                 //平移控制点（符号geometry的平移在拖拽控件中完成）
-                cp.x +=  lonLat.lon-ll.lon;
-                cp.y += lonLat.lat-ll.lat;
+                cp.x += lonLat.lon - ll.lon;
+                cp.y += lonLat.lat - ll.lat;
             }
             var geo = this.feature.geometry;
             geo._controlPoints = cps;
-            if(geo.isMultiPlotting)   geo.calculateParts();
+            if (geo.isMultiPlotting)   geo.calculateParts();
             this._dragPixel = pixel;
         }
     },
@@ -2295,7 +2304,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Method: dragComplete
      * Called by the drag feature control when the dragging is complete.
      */
-    dragComplete: function() {
+    dragComplete: function () {
         delete this._dragPixel;
         this.resetControlPoints();
         this.setFeatureState();
@@ -2308,8 +2317,8 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Called when the feature is modified.  If the current state is not
      *     INSERT or DELETE, the state is set to UPDATE.
      */
-    setFeatureState: function() {
-        if(this.feature.state != SuperMap.State.INSERT &&
+    setFeatureState: function () {
+        if (this.feature.state != SuperMap.State.INSERT &&
             this.feature.state != SuperMap.State.DELETE) {
             this.feature.state = SuperMap.State.UPDATE;
         }
@@ -2319,9 +2328,9 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Method: resetControlPoints
      * 重设控制点
      */
-    resetControlPoints: function() {
+    resetControlPoints: function () {
         //移除当前控制点
-        if(this.controlPoints.length > 0) {
+        if (this.controlPoints.length > 0) {
             this.layer.removeFeatures(this.controlPoints, {silent: true});
             this.controlPoints = [];
         }
@@ -2334,25 +2343,25 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Collect the control points from the modifiable plotting symbol's Geometry and push
      *     them on to the control's controlPoints array.
      */
-    collectControlPoints: function() {
-        if(!this.feature || !this.feature.geometry) return;
+    collectControlPoints: function () {
+        if (!this.feature || !this.feature.geometry) return;
         this.controlPoints = [];
         var control = this;
 
         //重设符号 Geometry 的 控制点
         function collectGeometryControlPoints(geometry) {
             var i, controlPoi, cp;
-            if(geometry instanceof SuperMap.Geometry.GeoPlotting || geometry instanceof SuperMap.Geometry.GeoLinePlotting
-                || geometry instanceof SuperMap.Geometry.GeoPoint|| geometry instanceof SuperMap.Geometry.GeoMultiPoint
-                || geometry instanceof SuperMap.Geometry.GeoMultiLinePlotting){
+            if (geometry instanceof SuperMap.Geometry.GeoPlotting || geometry instanceof SuperMap.Geometry.GeoLinePlotting
+                || geometry instanceof SuperMap.Geometry.GeoPoint || geometry instanceof SuperMap.Geometry.GeoMultiPoint
+                || geometry instanceof SuperMap.Geometry.GeoMultiLinePlotting) {
                 var numCont = geometry._controlPoints.length;
-                for(i=0; i<numCont; ++i) {
+                for (i = 0; i < numCont; ++i) {
                     cp = geometry._controlPoints[i];
-                    if(cp.CLASS_NAME == "SuperMap.Geometry.Point") {
+                    if (cp.CLASS_NAME == "SuperMap.Geometry.Point") {
                         controlPoi = new SuperMap.Feature.Vector(cp);
                         controlPoi._sketch = true;
                         controlPoi.style = SuperMap.Util.copyAttributes(controlPoi.style, control.defaultStyle);
-                        if(control.controlPointsStyle){
+                        if (control.controlPointsStyle) {
                             controlPoi.style = SuperMap.Util.copyAttributes(controlPoi.style, control.controlPointsStyle);
                         }
                         control.controlPoints.push(controlPoi);
@@ -2366,9 +2375,6 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
     },
 
 
-
-
-
     /**
      * Method: setMap
      * Set the map property for the control and all handlers.
@@ -2376,7 +2382,7 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Parameters:
      * map - {<SuperMap.Map>} The control's map.
      */
-    setMap: function(map) {
+    setMap: function (map) {
         this.selectControl.setMap(map);
         this.dragControl.setMap(map);
         SuperMap.Control.prototype.setMap.apply(this, arguments);
@@ -2387,11 +2393,11 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * 从 this.controlPoints 中获取出 Geometry 控制点数组
      *
      */
-    getCpGeos: function(){
+    getCpGeos: function () {
         var cpFeas = this.controlPoints;
         var cpGeos = [];
 
-        for(var i = 0; i < cpFeas.length; i++){
+        for (var i = 0; i < cpFeas.length; i++) {
             cpGeos.push(cpFeas[i].geometry);
         }
 
@@ -2405,10 +2411,10 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * Parameters:
      * cp - {<SuperMap.Geometry.Point>} 要进行克隆的控制点数组
      */
-    cloneControlPoints: function(cp){
+    cloneControlPoints: function (cp) {
         var controlPoints = [];
 
-        for(var i = 0; i < cp.length; i++){
+        for (var i = 0; i < cp.length; i++) {
             controlPoints.push(cp[i].clone());
         }
 
@@ -2420,14 +2426,15 @@ SuperMap.Control.PlottingEdit = SuperMap.Class(SuperMap.Control, {
      * 当前符号（this.feature）的控制点（Geometry._controlPoints）转为json数据。
      * (用于测试的方法)
      */
-    controlPointsToJSON: function(){
-       if(this.feature && this.feature.geometry &&(this.isPlottingGeometry(this.feature))){
+    controlPointsToJSON: function () {
+        if (this.feature && this.feature.geometry && (this.isPlottingGeometry(this.feature))) {
             return this.feature.geometry.toJSON();
-       }
+        }
     },
 
     CLASS_NAME: "SuperMap.Control.PlottingEdit"
-});/**
+})
+;/**
  * @requires SuperMap.Geometry.Point.js
  */
 

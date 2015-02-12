@@ -36,7 +36,7 @@
     }
     //加载类库资源文件
     function loadSMLibs() {
-        inputScript(baseurl+'SuperMap_Basic-7.1.1-12209.js');
+        inputScript(baseurl+'SuperMap_Basic-7.1.1-12212.js');
         inputCSS('style.css');
         inputCSS('google.css');
     }
@@ -44,5 +44,5 @@
     function loadLocalization() {
         inputScript(baseurl + 'Lang/zh-CN.js');
     }
-    loadSMLibs();loadLocalization();
+    loadSMLibs();
 })();
