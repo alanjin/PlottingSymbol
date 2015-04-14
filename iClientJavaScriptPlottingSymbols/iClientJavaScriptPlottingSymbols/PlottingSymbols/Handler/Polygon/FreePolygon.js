@@ -154,7 +154,71 @@ SuperMap.Handler.FreePolygon = SuperMap.Class(SuperMap.Handler.Plotting, {
         this.drawComplete();
         return false;
     },
-
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.FreePolygon"
 });
 

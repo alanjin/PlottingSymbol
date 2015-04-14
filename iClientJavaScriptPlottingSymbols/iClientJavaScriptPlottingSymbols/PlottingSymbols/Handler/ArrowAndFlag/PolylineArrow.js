@@ -112,6 +112,79 @@ SuperMap.Handler.PolylineArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.PolylineArrow"
 });
 

@@ -99,6 +99,56 @@ SuperMap.Handler.FreelineEx = SuperMap.Class(SuperMap.Handler.Plotting, {
 
     },
     /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+           this.modifyFeature(evt.xy);
+            if(this.persist) {
+                this.destroyPersistedFeature();
+            }
+            this.addControlPoint(evt.xy);
+            var len = this.controlPoints.length;
+            if(len >= 1) {
+                this.isDrawing = true;
+            }
+        return true;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+            this.lastTouchPx = evt.xy;
+            this.modifyFeature(evt.xy);
+        return true;
+    },
+    /**
      * APIMethod: modifyFeature
      * 绘制过程中修改标绘扩展符号形状。
      * 根据已添加的控制点和由当前鼠标位置作为的一个控制点绘制符号。
@@ -150,7 +200,24 @@ SuperMap.Handler.FreelineEx = SuperMap.Class(SuperMap.Handler.Plotting, {
      * {Boolean} Allow event propagation
      */
     dblclick: function(evt) {
+
         this.drawComplete();
+        return false;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+            this.drawComplete();
+            this.map.isIESingleTouch=true;
         return false;
     },
 

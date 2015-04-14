@@ -129,6 +129,58 @@ SuperMap.Handler.MultiPointEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         this.isDrawing = false;
         return false;
     },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
+
     CLASS_NAME: "SuperMap.Handler.MultiPointEx"
 });
 

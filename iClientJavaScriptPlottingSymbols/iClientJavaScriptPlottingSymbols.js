@@ -7878,6 +7878,58 @@ SuperMap.Handler.MultiPointEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         this.isDrawing = false;
         return false;
     },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
+
     CLASS_NAME: "SuperMap.Handler.MultiPointEx"
 });
 
@@ -8322,6 +8374,80 @@ SuperMap.Handler.BezierCurveNEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
+
     CLASS_NAME: "SuperMap.Handler.BezierCurveNEx"
 });
 
@@ -8441,6 +8567,79 @@ SuperMap.Handler.CardinalCurveEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.CardinalCurveEx"
 });
 
@@ -8546,6 +8745,56 @@ SuperMap.Handler.FreelineEx = SuperMap.Class(SuperMap.Handler.Plotting, {
 
     },
     /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+           this.modifyFeature(evt.xy);
+            if(this.persist) {
+                this.destroyPersistedFeature();
+            }
+            this.addControlPoint(evt.xy);
+            var len = this.controlPoints.length;
+            if(len >= 1) {
+                this.isDrawing = true;
+            }
+        return true;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+            this.lastTouchPx = evt.xy;
+            this.modifyFeature(evt.xy);
+        return true;
+    },
+    /**
      * APIMethod: modifyFeature
      * 绘制过程中修改标绘扩展符号形状。
      * 根据已添加的控制点和由当前鼠标位置作为的一个控制点绘制符号。
@@ -8597,7 +8846,24 @@ SuperMap.Handler.FreelineEx = SuperMap.Class(SuperMap.Handler.Plotting, {
      * {Boolean} Allow event propagation
      */
     dblclick: function(evt) {
+
         this.drawComplete();
+        return false;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+            this.drawComplete();
+            this.map.isIESingleTouch=true;
         return false;
     },
 
@@ -8719,7 +8985,79 @@ SuperMap.Handler.PolyLineEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         this.drawComplete();
         return false;
     },
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
 
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.PolyLineEx"
 });
 
@@ -8837,6 +9175,71 @@ SuperMap.Handler.CircleEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.CircleEx"
 });
 
@@ -8968,6 +9371,79 @@ SuperMap.Handler.CloseCurve = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.CloseCurve"
 });
 
@@ -9076,6 +9552,71 @@ SuperMap.Handler.EllipseEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.EllipseEx"
 });
 
@@ -9236,7 +9777,71 @@ SuperMap.Handler.FreePolygon = SuperMap.Class(SuperMap.Handler.Plotting, {
         this.drawComplete();
         return false;
     },
-
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.FreePolygon"
 });
 
@@ -9579,6 +10184,79 @@ SuperMap.Handler.PolygonEx = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.PolygonEx"
 });
 
@@ -9691,6 +10369,71 @@ SuperMap.Handler.Rectangle = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.Rectangle"
 });
 
@@ -9802,6 +10545,71 @@ SuperMap.Handler.RoundedRect = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.RoundedRect"
 });
 
@@ -10028,6 +10836,79 @@ SuperMap.Handler.BezierCurveArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
 
     CLASS_NAME: "SuperMap.Handler.BezierCurveArrow"
 });
@@ -10145,6 +11026,79 @@ SuperMap.Handler.CardinalCurveArrow = SuperMap.Class(SuperMap.Handler.Plotting, 
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.CardinalCurveArrow"
 });
 
@@ -10257,6 +11211,71 @@ SuperMap.Handler.CurveFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.CurveFlag"
 });
 
@@ -10397,6 +11416,79 @@ SuperMap.Handler.DiagonalArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.DiagonalArrow"
 });
 
@@ -10713,6 +11805,79 @@ SuperMap.Handler.DoveTailDiagonalArrow = SuperMap.Class(SuperMap.Handler.Plottin
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.DoveTailDiagonalArrow"
 });
 
@@ -10864,6 +12029,79 @@ SuperMap.Handler.DoveTailStraightArrow = SuperMap.Class(SuperMap.Handler.Plottin
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.DoveTailStraightArrow"
 });
 
@@ -10982,6 +12220,79 @@ SuperMap.Handler.ParallelSearch = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.ParallelSearch"
 });
 
@@ -10993,7 +12304,7 @@ SuperMap.Handler.ParallelSearch = SuperMap.Class(SuperMap.Handler.Plotting, {
 
 /**
  * Class: SuperMap.Handler.RectFlag
- * 在地图上绘制直箭头的事件处理器。
+ * 在地图上绘制矩形旗标的事件处理器。
  * 绘制点在激活后显示，随着鼠标移动而移动，在鼠标第一次松开后开始绘制，在鼠标第二次松开后完成绘制。
  * 该处理器会触发标记为"done"、"cancel"和“modify"的事件回调。其中modify回调会在每一次变化时被调用并传入最近一次绘制的点。
  * 使用 <SuperMap.Handler.RectFlag> 构造函数可以创建一个新的绘制直箭头的事件处理器实例。
@@ -11104,6 +12415,71 @@ SuperMap.Handler.RectFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.RectFlag"
 });
 
@@ -11373,6 +12749,79 @@ SuperMap.Handler.StraightArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.StraightArrow"
 });
 
@@ -11491,6 +12940,79 @@ SuperMap.Handler.PolylineArrow = SuperMap.Class(SuperMap.Handler.Plotting, {
         return false;
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if(this.lastTouchPx&&this.passesTolerance(this.lastTouchPx, evt.xy, this.pixelTolerance))
+        {
+            evt.preventDefault();
+            this.drawComplete();
+            this.isDrawing = false;
+            return false;
+        }
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.lastTouchPx = evt.xy;
+        return this.down(evt);
+    },
+    /**
+     * APIMethod: down
+     * Handle mousedown and touchstart.  Adjust the Geometry and redraw.
+     * Return determines whether to propagate the event on the map.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    down: function (evt) {
+        this.mouseDown = true;
+        this.lastDown = evt.xy;
+        this.isDrawing = true;
+        if (!this.touch) {
+            this.modifyFeature(evt.xy);
+        }
+        this.stoppedDown = this.stopDown;
+        return !this.stopDown;
+    },
+
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        if(this.isDrawing)
+        {
+            evt.xy = this.lastTouchPx;
+            return this.up(evt);
+        }
+
+    },
     CLASS_NAME: "SuperMap.Handler.PolylineArrow"
 });
 
@@ -11613,6 +13135,71 @@ SuperMap.Handler.TriangleFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.TriangleFlag"
 });
 

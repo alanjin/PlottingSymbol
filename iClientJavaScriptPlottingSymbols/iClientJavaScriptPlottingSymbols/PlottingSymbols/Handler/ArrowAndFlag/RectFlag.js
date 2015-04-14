@@ -5,7 +5,7 @@
 
 /**
  * Class: SuperMap.Handler.RectFlag
- * 在地图上绘制直箭头的事件处理器。
+ * 在地图上绘制矩形旗标的事件处理器。
  * 绘制点在激活后显示，随着鼠标移动而移动，在鼠标第一次松开后开始绘制，在鼠标第二次松开后完成绘制。
  * 该处理器会触发标记为"done"、"cancel"和“modify"的事件回调。其中modify回调会在每一次变化时被调用并传入最近一次绘制的点。
  * 使用 <SuperMap.Handler.RectFlag> 构造函数可以创建一个新的绘制直箭头的事件处理器实例。
@@ -116,6 +116,71 @@ SuperMap.Handler.RectFlag = SuperMap.Class(SuperMap.Handler.Plotting, {
         }
     },
 
+    /**
+     * Method: touchstart
+     * Handle touchstart.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchstart: function(evt) {
+        if (!this.touch) {
+            this.touch = true;
+            // unregister mouse listeners
+            this.map.events.un({
+                mousedown: this.mousedown,
+                mouseup: this.mouseup,
+                mousemove: this.mousemove,
+                click: this.click,
+                dblclick: this.dblclick,
+                scope: this
+            });
+        }
+        this.map.isIESingleTouch=false;
+        this.modifyFeature(evt.xy);
+        if(this.persist) {
+            this.destroyPersistedFeature();
+        }
+        this.addControlPoint(evt.xy);
+        var len = this.controlPoints.length;
+        if(len >= 1) {
+            this.isDrawing = true;
+        }
+        return true;
+    },
+    /**
+     * Method: touchend
+     * Handle touchend.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchend: function(evt) {
+        this.drawComplete();
+        this.map.isIESingleTouch=true;
+        return false;
+    },
+    /**
+     * Method: touchmove
+     * Handle touchmove.
+     *
+     * Parameters:
+     * evt - {Event} The browser event
+     *
+     * Returns:
+     * {Boolean} Allow event propagation
+     */
+    touchmove: function(evt) {
+        this.lastTouchPx = evt.xy;
+        this.modifyFeature(evt.xy);
+        return true;
+    },
     CLASS_NAME: "SuperMap.Handler.RectFlag"
 });
 
