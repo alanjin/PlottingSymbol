@@ -23,7 +23,7 @@ SuperMap.Geometry.GeoPoint = SuperMap.Class(
          * 构造函数
          *
          * Parameters:
-         * point - {Array(<SuperMap.Geometry.Point>)} 需要传入的控制点，默认为null
+         * point - {<SuperMap.Geometry.Point>} 需要传入的控制点，默认为null
          */
         initialize: function (point) {
             SuperMap.Geometry.Point.prototype.initialize.apply(this, arguments);
@@ -96,7 +96,7 @@ SuperMap.Geometry.GeoPoint = SuperMap.Class(
                 this.y = point.y;
             }
         },
-        CLASS_NAME: "SuperMap.Geometry.GeoPoint"
+        CLASS_NAME: "SuperMap.Geometry.Point"
     }
 );
 

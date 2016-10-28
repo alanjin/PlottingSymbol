@@ -264,6 +264,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
             this.plotting.geometry._controlPoints = this.cloneControlPoints(cp);
             //重新计算标绘扩展符号的geometry
             this.plotting.geometry.calculateParts();
+            this.plotting.geometry.calculateBounds();
         }
 
         this.callback("modify", [this.point.geometry, this.getSketch(), false]);
