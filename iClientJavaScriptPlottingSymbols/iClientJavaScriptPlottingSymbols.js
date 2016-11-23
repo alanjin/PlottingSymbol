@@ -1541,6 +1541,7 @@ SuperMap.Handler.Plotting = SuperMap.Class(SuperMap.Handler, {
             this.plotting.geometry._controlPoints = this.cloneControlPoints(cp);
             //重新计算标绘扩展符号的geometry
             this.plotting.geometry.calculateParts();
+            this.plotting.geometry.calculateBounds();
         }
 
         this.callback("modify", [this.point.geometry, this.getSketch(), false]);
@@ -2459,7 +2460,7 @@ SuperMap.Geometry.GeoPoint = SuperMap.Class(
          * 构造函数
          *
          * Parameters:
-         * point - {Array(<SuperMap.Geometry.Point>)} 需要传入的控制点，默认为null
+         * point - {<SuperMap.Geometry.Point>} 需要传入的控制点，默认为null
          */
         initialize: function (point) {
             SuperMap.Geometry.Point.prototype.initialize.apply(this, arguments);
@@ -2532,7 +2533,7 @@ SuperMap.Geometry.GeoPoint = SuperMap.Class(
                 this.y = point.y;
             }
         },
-        CLASS_NAME: "SuperMap.Geometry.GeoPoint"
+        CLASS_NAME: "SuperMap.Geometry.Point"
     }
 );
 
