@@ -84,4 +84,4 @@
 
 javaScript范例地址：
 
-http://www.supermapol.com/lab/plotting/javascript/example/index.html
+http://lab.supermapol.com/plotting/javascript/example/index.html
